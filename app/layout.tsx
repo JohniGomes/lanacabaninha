@@ -15,9 +15,22 @@ const caveat = Caveat({
   weight: ["600", "700"],
 });
 
+const siteUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Lá Na Cabaninha",
   description: "Sistema de gestão de festas do pijama — protótipo",
+  manifest: "/manifest.webmanifest",
+  openGraph: {
+    title: "Lá Na Cabaninha",
+    description: "Sistema de gestão de festas do pijama — protótipo",
+    siteName: "Lá Na Cabaninha",
+    locale: "pt_BR",
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {
