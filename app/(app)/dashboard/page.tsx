@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { StatCard } from "@/components/StatCard";
 import { EventCard } from "@/components/EventCard";
 import { getEventos, getLancamentos } from "@/lib/storage";
-import { Evento } from "@/lib/types";
+import { Evento, LancamentoFinanceiro } from "@/lib/types";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { useRole } from "@/lib/role-context";
 
@@ -13,12 +13,13 @@ const HOJE = new Date().toISOString().slice(0, 10);
 export default function DashboardPage() {
   const { role } = useRole();
   const [eventos, setEventos] = useState<Evento[]>([]);
+  const [lancamentos, setLancamentos] = useState<LancamentoFinanceiro[]>([]);
 
   useEffect(() => {
     setEventos(getEventos());
+    setLancamentos(getLancamentos());
   }, []);
 
-  const lancamentos = getLancamentos();
   const saldo = lancamentos.reduce(
     (acc, l) => acc + (l.tipo === "receita" ? l.valor : -l.valor),
     0

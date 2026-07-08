@@ -2,6 +2,7 @@ import { eventos as eventosMock, lancamentos as lancamentosMock } from "./mock-d
 import { Evento, LancamentoFinanceiro, Role, StatusItem } from "./types";
 
 const EVENTOS_KEY = "lnc_eventos";
+const LANCAMENTOS_KEY = "lnc_lancamentos";
 const ROLE_KEY = "lnc_role";
 
 function isBrowser() {
@@ -59,7 +60,27 @@ export function toggleChecklistItem(eventoId: string, itemId: string) {
 }
 
 export function getLancamentos(): LancamentoFinanceiro[] {
-  return lancamentosMock;
+  if (!isBrowser()) return lancamentosMock;
+  const raw = window.localStorage.getItem(LANCAMENTOS_KEY);
+  if (!raw) {
+    window.localStorage.setItem(LANCAMENTOS_KEY, JSON.stringify(lancamentosMock));
+    return lancamentosMock;
+  }
+  try {
+    return JSON.parse(raw) as LancamentoFinanceiro[];
+  } catch {
+    return lancamentosMock;
+  }
+}
+
+export function saveLancamentos(lancamentos: LancamentoFinanceiro[]) {
+  if (!isBrowser()) return;
+  window.localStorage.setItem(LANCAMENTOS_KEY, JSON.stringify(lancamentos));
+}
+
+export function addLancamento(lancamento: LancamentoFinanceiro) {
+  const lancamentos = getLancamentos();
+  saveLancamentos([lancamento, ...lancamentos]);
 }
 
 export function getRole(): Role | null {
