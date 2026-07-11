@@ -1,9 +1,14 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OpengraphImage() {
+export default async function OpengraphImage() {
+  const logoBuffer = await readFile(join(process.cwd(), "public/logo.jpeg"));
+  const logoSrc = `data:image/jpeg;base64,${logoBuffer.toString("base64")}`;
+
   return new ImageResponse(
     (
       <div
@@ -17,19 +22,9 @@ export default function OpengraphImage() {
           background: "linear-gradient(135deg, #fdf6f2 0%, #f4c6d7 50%, #cdbdec 100%)",
         }}
       >
-        <div style={{ fontSize: 160, display: "flex" }}>⛺️</div>
-        <div
-          style={{
-            marginTop: 16,
-            fontSize: 88,
-            fontWeight: 700,
-            color: "#a6417a",
-            display: "flex",
-          }}
-        >
-          Lá Na Cabaninha
-        </div>
-        <div style={{ marginTop: 12, fontSize: 32, color: "#6b5271", display: "flex" }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={logoSrc} width={460} height={410} style={{ objectFit: "contain" }} />
+        <div style={{ marginTop: 4, fontSize: 32, color: "#6b5271", display: "flex" }}>
           Organização de festas, financeiro e atendimento em um só lugar
         </div>
       </div>

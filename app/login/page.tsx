@@ -1,8 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRole } from "@/lib/role-context";
 import { Role } from "@/lib/types";
+import logo from "@/public/logo.jpeg";
 
 export default function LoginPage() {
   const { login } = useRole();
@@ -15,10 +17,9 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 py-12">
-      <div className="mb-10 flex flex-col items-center text-center">
-        <span className="text-5xl">⛺️</span>
-        <h1 className="mt-2 font-display text-5xl text-pink-dark">Lá Na Cabaninha</h1>
-        <p className="mt-2 text-sm text-muted">
+      <div className="mb-6 flex flex-col items-center text-center">
+        <Image src={logo} alt="Lá Na Cabaninha" width={220} height={196} priority />
+        <p className="mt-1 text-sm text-muted">
           Organização de festas, financeiro e atendimento em um só lugar
         </p>
       </div>

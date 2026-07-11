@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRole } from "@/lib/role-context";
 import { BottomNav } from "@/components/BottomNav";
+import logo from "@/public/logo.jpeg";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { role, ready } = useRole();
@@ -25,8 +27,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-surface/95 px-4 py-3 backdrop-blur">
-        <span className="font-display text-2xl text-pink-dark">Lá Na Cabaninha</span>
+      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-surface/95 px-4 py-2 backdrop-blur">
+        <Image src={logo} alt="Lá Na Cabaninha" height={44} width={49} className="h-11 w-auto" priority />
         <span className="rounded-full bg-lilac/40 px-3 py-1 text-xs font-semibold text-lilac-dark">
           {role === "admin" ? "Admin" : "Colaborador"}
         </span>

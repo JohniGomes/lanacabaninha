@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { colecoes } from "@/lib/mock-data";
 import { addEvento } from "@/lib/storage";
 import { CaminhoFesta, ChecklistItem, Evento } from "@/lib/types";
+import logo from "@/public/logo.jpeg";
 
 interface FormState {
   caminho: CaminhoFesta | null;
@@ -19,6 +21,7 @@ interface FormState {
   corFavorita: string;
   corNaoGosta: string;
   naoPodeFaltar: string;
+  aceitaPrivacidade: boolean;
 }
 
 const INITIAL_STATE: FormState = {
@@ -35,6 +38,7 @@ const INITIAL_STATE: FormState = {
   corFavorita: "",
   corNaoGosta: "",
   naoPodeFaltar: "",
+  aceitaPrivacidade: false,
 };
 
 function checklistInicial(): ChecklistItem[] {
@@ -62,6 +66,7 @@ export default function FormularioPublicoPage() {
     if (step === 0) return form.caminho !== null;
     if (step === 1) return form.caminho === "assinada" ? !!form.colecaoId : form.tema.trim().length > 0;
     if (step === 2) return form.aniversariante.trim() && form.endereco.trim() && form.data && form.horario;
+    if (step === 3) return form.aceitaPrivacidade;
     return true;
   }
 
@@ -105,9 +110,8 @@ export default function FormularioPublicoPage() {
   return (
     <div className="flex flex-1 flex-col px-6 py-8">
       <div className="mx-auto w-full max-w-sm flex-1">
-        <div className="mb-6 flex flex-col items-center text-center">
-          <span className="text-4xl">⛺️</span>
-          <h1 className="mt-1 font-display text-4xl text-pink-dark">Lá Na Cabaninha</h1>
+        <div className="mb-4 flex flex-col items-center text-center">
+          <Image src={logo} alt="Lá Na Cabaninha" width={160} height={142} priority />
           <p className="mt-1 text-sm text-muted">Formulário de atendimento — conta pra gente sobre a festa!</p>
         </div>
 
@@ -186,6 +190,28 @@ export default function FormularioPublicoPage() {
                 value={form.naoPodeFaltar}
                 onChange={(v) => update("naoPodeFaltar", v)}
               />
+
+              <div className="rounded-xl border border-border bg-cream p-3 text-xs text-muted">
+                <p className="font-semibold text-foreground">Aviso de privacidade</p>
+                <p className="mt-1">
+                  Usamos os dados desse formulário (nome e idade da aniversariante, endereço,
+                  contato e preferências da festa) só para organizar e realizar o seu evento na
+                  Lá Na Cabaninha. Não vendemos nem compartilhamos essas informações com
+                  terceiros. Dúvidas sobre seus dados? Fale com a gente pelo WhatsApp.
+                </p>
+              </div>
+
+              <label className="flex items-start gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={form.aceitaPrivacidade}
+                  onChange={(e) => update("aceitaPrivacidade", e.target.checked)}
+                  className="mt-0.5 h-4 w-4 accent-pink-dark"
+                />
+                <span className="text-muted">
+                  Li e concordo com o uso dos meus dados conforme o aviso de privacidade acima.
+                </span>
+              </label>
             </div>
           )}
         </div>
