@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChecklistItemRow } from "@/components/ChecklistItemRow";
+import { IconArrowLeft, IconCheckCircle, IconClock, IconLink } from "@/components/Icons";
 import { getEvento, toggleChecklistItem } from "@/lib/storage";
 import { colecoes } from "@/lib/mock-data";
 import { Evento } from "@/lib/types";
@@ -54,9 +55,9 @@ export default function EventoDetalhePage() {
     <div className="space-y-6">
       <button
         onClick={() => router.push("/calendario")}
-        className="text-sm font-medium text-muted"
+        className="flex items-center gap-1 text-sm font-medium text-muted"
       >
-        ← Voltar
+        <IconArrowLeft className="h-4 w-4" /> Voltar
       </button>
 
       <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
@@ -68,7 +69,7 @@ export default function EventoDetalhePage() {
           {evento.idade ? ` · ${evento.idade} anos` : ""}
         </h1>
         <p className="text-sm text-muted">
-          {colecao ? `${colecao.emoji} Experiência Assinada — ${colecao.nome}` : `🎨 ${evento.tema} (Personalizada)`}
+          {colecao ? `Experiência Assinada — ${colecao.nome}` : `${evento.tema} (Personalizada)`}
         </p>
 
         <dl className="mt-4 space-y-1.5 text-sm">
@@ -87,22 +88,28 @@ export default function EventoDetalhePage() {
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">Contrato</h2>
         {evento.contratoAceito ? (
-          <div className="rounded-xl border border-mint-dark/40 bg-mint/20 px-4 py-3 text-sm">
-            <span className="font-semibold text-foreground">✅ Aceito</span>
-            <span className="block text-xs text-muted">
-              {evento.contratoAceitoEm ? new Date(evento.contratoAceitoEm).toLocaleString("pt-BR") : ""}
-            </span>
+          <div className="flex items-center gap-2 rounded-xl border border-mint-dark/40 bg-mint/20 px-4 py-3 text-sm">
+            <IconCheckCircle className="h-5 w-5 shrink-0 text-mint-dark" />
+            <div>
+              <span className="font-semibold text-foreground">Aceito</span>
+              <span className="block text-xs text-muted">
+                {evento.contratoAceitoEm ? new Date(evento.contratoAceitoEm).toLocaleString("pt-BR") : ""}
+              </span>
+            </div>
           </div>
         ) : (
           <div className="space-y-2">
-            <div className="rounded-xl border border-border bg-surface px-4 py-3 text-sm">
-              <span className="font-semibold text-foreground">⏳ Aguardando aceite</span>
+            <div className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-3 text-sm">
+              <IconClock className="h-5 w-5 shrink-0 text-muted" />
+              <span className="font-semibold text-foreground">Aguardando aceite</span>
             </div>
             <button
               onClick={copiarLinkContrato}
               className="w-full rounded-xl border border-dashed border-pink-dark/50 bg-pink/20 px-4 py-2.5 text-left text-xs text-pink-dark"
             >
-              <span className="font-semibold">🔗 {copiado ? "Link copiado!" : "Copiar link do contrato"}</span>
+              <span className="flex items-center gap-1.5 font-semibold">
+                <IconLink className="h-4 w-4" /> {copiado ? "Link copiado!" : "Copiar link do contrato"}
+              </span>
             </button>
           </div>
         )}

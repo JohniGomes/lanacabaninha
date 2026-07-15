@@ -11,6 +11,7 @@ import {
 } from "@/lib/storage";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { StatCard } from "@/components/StatCard";
+import { IconTrendingDown, IconTrendingUp, IconWallet } from "@/components/Icons";
 import { Fornecedor, LancamentoFinanceiro, TipoLancamento } from "@/lib/types";
 
 const CATEGORIAS_SUGERIDAS = [
@@ -175,9 +176,9 @@ export default function FinanceiroPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-3">
-        <StatCard icon="💰" label="Saldo de caixa" value={formatCurrency(saldo)} accent="mint" />
-        <StatCard icon="📈" label="Receitas" value={formatCurrency(totalReceitas)} accent="pink" />
-        <StatCard icon="📉" label="Despesas" value={formatCurrency(totalDespesas)} accent="lilac" />
+        <StatCard icon={<IconWallet className="h-5 w-5" />} label="Saldo de caixa" value={formatCurrency(saldo)} accent="mint" />
+        <StatCard icon={<IconTrendingUp className="h-5 w-5" />} label="Receitas" value={formatCurrency(totalReceitas)} accent="pink" />
+        <StatCard icon={<IconTrendingDown className="h-5 w-5" />} label="Despesas" value={formatCurrency(totalDespesas)} accent="lilac" />
       </div>
 
       <div className="flex gap-2 overflow-x-auto">

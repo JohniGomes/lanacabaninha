@@ -1,22 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import { ComponentType } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useRole } from "@/lib/role-context";
 import { Role } from "@/lib/types";
+import { IconBox, IconCalendar, IconHome, IconLogOut, IconWallet } from "./Icons";
 
 interface NavItem {
   href: string;
   label: string;
-  icon: string;
+  icon: ComponentType<{ className?: string }>;
   roles: Role[];
 }
 
 const ITEMS: NavItem[] = [
-  { href: "/dashboard", label: "Início", icon: "🏠", roles: ["admin", "colaborador"] },
-  { href: "/calendario", label: "Eventos", icon: "📅", roles: ["admin", "colaborador"] },
-  { href: "/estoque", label: "Estoque", icon: "📦", roles: ["admin", "colaborador"] },
-  { href: "/financeiro", label: "Financeiro", icon: "💰", roles: ["admin"] },
+  { href: "/dashboard", label: "Início", icon: IconHome, roles: ["admin", "colaborador"] },
+  { href: "/calendario", label: "Eventos", icon: IconCalendar, roles: ["admin", "colaborador"] },
+  { href: "/estoque", label: "Estoque", icon: IconBox, roles: ["admin", "colaborador"] },
+  { href: "/financeiro", label: "Financeiro", icon: IconWallet, roles: ["admin"] },
 ];
 
 export function BottomNav() {
@@ -31,6 +33,7 @@ export function BottomNav() {
       <ul className="mx-auto flex max-w-md items-stretch justify-around">
         {items.map((item) => {
           const active = pathname === item.href || pathname.startsWith(item.href + "/");
+          const Icon = item.icon;
           return (
             <li key={item.href} className="flex-1">
               <Link
@@ -39,7 +42,7 @@ export function BottomNav() {
                   active ? "text-pink-dark" : "text-muted"
                 }`}
               >
-                <span className="text-xl leading-none">{item.icon}</span>
+                <Icon className="h-5 w-5" />
                 {item.label}
               </Link>
             </li>
@@ -53,7 +56,7 @@ export function BottomNav() {
             }}
             className="flex w-full flex-col items-center gap-0.5 py-2.5 text-xs font-medium text-muted"
           >
-            <span className="text-xl leading-none">🚪</span>
+            <IconLogOut className="h-5 w-5" />
             Sair
           </button>
         </li>

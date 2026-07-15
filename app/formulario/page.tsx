@@ -133,7 +133,7 @@ export default function FormularioPublicoPage() {
                     key={c.id}
                     selected={form.colecaoId === c.id}
                     onClick={() => update("colecaoId", c.id)}
-                    title={`${c.emoji} ${c.nome}`}
+                    title={c.nome}
                     subtitle={c.descricao}
                   />
                 ))}

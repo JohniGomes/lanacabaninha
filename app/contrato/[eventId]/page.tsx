@@ -6,6 +6,7 @@ import Image from "next/image";
 import { aceitarContrato, getEvento } from "@/lib/storage";
 import { Evento } from "@/lib/types";
 import { formatDateLong } from "@/lib/format";
+import { IconAlertTriangle, IconCheckCircle } from "@/components/Icons";
 import logo from "@/public/logo.jpeg";
 
 export default function ContratoPage() {
@@ -40,7 +41,7 @@ export default function ContratoPage() {
 
         {evento.contratoAceito ? (
           <div className="rounded-2xl border border-mint-dark/40 bg-mint/20 p-4 text-center">
-            <span className="text-3xl">✅</span>
+            <IconCheckCircle className="mx-auto h-8 w-8 text-mint-dark" />
             <p className="mt-2 text-sm font-semibold text-foreground">Contrato já aceito</p>
             <p className="mt-1 text-xs text-muted">
               Confirmado em{" "}
@@ -49,15 +50,18 @@ export default function ContratoPage() {
                 : "—"}
             </p>
             <p className="mt-3 text-xs text-muted">
-              Nossa equipe já foi avisada e entra em contato pelo WhatsApp em breve. ✨
+              Nossa equipe já foi avisada e entra em contato pelo WhatsApp em breve.
             </p>
           </div>
         ) : (
           <>
             <div className="rounded-2xl border border-border bg-surface p-4 text-sm">
-              <p className="mb-2 rounded-lg bg-pink/30 px-3 py-2 text-xs font-semibold text-pink-dark">
-                ⚠️ Texto de exemplo — será substituído pelo contrato oficial enviado pela Lá Na
-                Cabaninha.
+              <p className="mb-2 flex items-start gap-1.5 rounded-lg bg-pink/30 px-3 py-2 text-xs font-semibold text-pink-dark">
+                <IconAlertTriangle className="h-4 w-4 shrink-0 translate-y-0.5" />
+                <span>
+                  Texto de exemplo — será substituído pelo contrato oficial enviado pela Lá Na
+                  Cabaninha.
+                </span>
               </p>
               <h2 className="mb-2 font-semibold">Contrato de Locação de Enxoval e Decoração</h2>
               <div className="space-y-2 text-xs leading-relaxed text-muted">

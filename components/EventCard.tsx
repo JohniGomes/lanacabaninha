@@ -23,7 +23,7 @@ export function EventCard({ evento }: { evento: Evento }) {
             {evento.idade ? ` · ${evento.idade} anos` : ""}
           </p>
           <p className="truncate text-sm text-muted">
-            {colecao ? `${colecao.emoji} ${colecao.nome}` : evento.tema}
+            {colecao ? colecao.nome : evento.tema}
           </p>
         </div>
         <span className="shrink-0 rounded-full bg-mint/40 px-2.5 py-1 text-xs font-semibold text-mint-dark">

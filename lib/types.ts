@@ -51,7 +51,6 @@ export interface LancamentoFinanceiro {
 export interface Colecao {
   id: string;
   nome: string;
-  emoji: string;
   descricao: string;
 }
 

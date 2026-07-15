@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { EventCard } from "@/components/EventCard";
+import { IconLink } from "@/components/Icons";
 import { getEventos } from "@/lib/storage";
 import { Evento } from "@/lib/types";
 
@@ -34,7 +35,9 @@ export default function CalendarioPage() {
         onClick={copiarLink}
         className="w-full rounded-xl border border-dashed border-pink-dark/50 bg-pink/20 px-4 py-3 text-left text-sm text-pink-dark"
       >
-        <span className="font-semibold">🔗 {copiado ? "Link copiado!" : "Copiar link do formulário público"}</span>
+        <span className="flex items-center gap-1.5 font-semibold">
+          <IconLink className="h-4 w-4" /> {copiado ? "Link copiado!" : "Copiar link do formulário público"}
+        </span>
         <span className="block text-xs text-pink-dark/80">
           Envie pra cliente preencher direto pelo celular
         </span>

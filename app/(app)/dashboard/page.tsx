@@ -7,6 +7,7 @@ import { getEventos, getLancamentos } from "@/lib/storage";
 import { Evento, LancamentoFinanceiro } from "@/lib/types";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { useRole } from "@/lib/role-context";
+import { IconBasket, IconCalendar, IconWallet } from "@/components/Icons";
 
 const HOJE = new Date().toISOString().slice(0, 10);
 
@@ -42,28 +43,28 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">Oi! 👋</h1>
+        <h1 className="text-xl font-semibold">Olá!</h1>
         <p className="text-sm text-muted">Aqui está o resumo de hoje.</p>
       </div>
 
       <div className="grid grid-cols-1 gap-3">
         {role === "admin" && (
           <StatCard
-            icon="💰"
+            icon={<IconWallet className="h-5 w-5" />}
             label="Saldo financeiro"
             value={formatCurrency(saldo)}
             accent="mint"
           />
         )}
         <StatCard
-          icon="📅"
+          icon={<IconCalendar className="h-5 w-5" />}
           label="Próximo evento"
           value={proximosEventos[0] ? proximosEventos[0].aniversariante : "Nenhum agendado"}
           hint={proximosEventos[0] ? formatDate(proximosEventos[0].data) : undefined}
           accent="pink"
         />
         <StatCard
-          icon="🧺"
+          icon={<IconBasket className="h-5 w-5" />}
           label="Itens aguardando retorno"
           value={String(totalPendencias)}
           hint={totalPendencias > 0 ? "Ainda não voltaram de uma festa" : "Tudo em dia"}

@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 const ACCENTS = {
   pink: "bg-pink/40 text-pink-dark",
   lilac: "bg-lilac/40 text-lilac-dark",
@@ -11,7 +13,7 @@ export function StatCard({
   hint,
   accent = "pink",
 }: {
-  icon: string;
+  icon: ReactNode;
   label: string;
   value: string;
   hint?: string;
@@ -20,7 +22,7 @@ export function StatCard({
   return (
     <div className="rounded-2xl bg-surface p-4 shadow-sm border border-border">
       <div className="flex items-center gap-3">
-        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg ${ACCENTS[accent]}`}>
+        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${ACCENTS[accent]}`}>
           {icon}
         </span>
         <div className="min-w-0">

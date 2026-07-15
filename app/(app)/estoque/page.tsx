@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { addEstoqueItem, deleteEstoqueItem, getEstoque, updateEstoqueItem } from "@/lib/storage";
 import { EstoqueItem } from "@/lib/types";
+import { IconTrash } from "@/components/Icons";
 
 export default function EstoquePage() {
   const [itens, setItens] = useState<EstoqueItem[]>([]);
@@ -206,10 +207,10 @@ export default function EstoquePage() {
                         </button>
                         <button
                           onClick={() => excluirItem(item.id, item.nome)}
-                          className="ml-1 flex h-7 w-7 items-center justify-center rounded-lg text-sm text-muted"
+                          className="ml-1 flex h-7 w-7 items-center justify-center rounded-lg text-muted"
                           aria-label={`Excluir ${item.nome}`}
                         >
-                          🗑️
+                          <IconTrash className="h-4 w-4" />
                         </button>
                       </div>
                     </div>
