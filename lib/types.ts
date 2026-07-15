@@ -31,6 +31,8 @@ export interface Evento {
   horarioSpa?: string;
   observacoes?: string;
   checklist: ChecklistItem[];
+  contratoAceito?: boolean;
+  contratoAceitoEm?: string;
 }
 
 export type TipoLancamento = "receita" | "despesa";
@@ -43,6 +45,7 @@ export interface LancamentoFinanceiro {
   valor: number;
   data: string;
   eventoId?: string;
+  fornecedorId?: string;
 }
 
 export interface Colecao {
@@ -50,4 +53,19 @@ export interface Colecao {
   nome: string;
   emoji: string;
   descricao: string;
+}
+
+export interface Fornecedor {
+  id: string;
+  nome: string;
+  categoria: string;
+  contato?: string;
+}
+
+export interface EstoqueItem {
+  id: string;
+  categoria: string;
+  nome: string;
+  quantidade: number;
+  nota?: string;
 }

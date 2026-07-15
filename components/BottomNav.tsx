@@ -15,6 +15,7 @@ interface NavItem {
 const ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Início", icon: "🏠", roles: ["admin", "colaborador"] },
   { href: "/calendario", label: "Eventos", icon: "📅", roles: ["admin", "colaborador"] },
+  { href: "/estoque", label: "Estoque", icon: "📦", roles: ["admin", "colaborador"] },
   { href: "/financeiro", label: "Financeiro", icon: "💰", roles: ["admin"] },
 ];
 

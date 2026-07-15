@@ -13,10 +13,19 @@ export default function EventoDetalhePage() {
   const params = useParams<{ eventId: string }>();
   const router = useRouter();
   const [evento, setEvento] = useState<Evento | null | undefined>(undefined);
+  const [copiado, setCopiado] = useState(false);
 
   useEffect(() => {
     setEvento(getEvento(params.eventId) ?? null);
   }, [params.eventId]);
+
+  function copiarLinkContrato() {
+    const url = `${window.location.origin}/contrato/${params.eventId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2000);
+    });
+  }
 
   if (evento === undefined) {
     return <p className="text-sm text-muted">Carregando...</p>;
@@ -74,6 +83,30 @@ export default function EventoDetalhePage() {
           {evento.observacoes && <Row label="Obs." value={evento.observacoes} />}
         </dl>
       </div>
+
+      <section>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">Contrato</h2>
+        {evento.contratoAceito ? (
+          <div className="rounded-xl border border-mint-dark/40 bg-mint/20 px-4 py-3 text-sm">
+            <span className="font-semibold text-foreground">✅ Aceito</span>
+            <span className="block text-xs text-muted">
+              {evento.contratoAceitoEm ? new Date(evento.contratoAceitoEm).toLocaleString("pt-BR") : ""}
+            </span>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <div className="rounded-xl border border-border bg-surface px-4 py-3 text-sm">
+              <span className="font-semibold text-foreground">⏳ Aguardando aceite</span>
+            </div>
+            <button
+              onClick={copiarLinkContrato}
+              className="w-full rounded-xl border border-dashed border-pink-dark/50 bg-pink/20 px-4 py-2.5 text-left text-xs text-pink-dark"
+            >
+              <span className="font-semibold">🔗 {copiado ? "Link copiado!" : "Copiar link do contrato"}</span>
+            </button>
+          </div>
+        )}
+      </section>
 
       <section>
         <div className="mb-3 flex items-center justify-between">

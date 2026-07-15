@@ -1,4 +1,4 @@
-import { ChecklistItem, Colecao, Evento, LancamentoFinanceiro } from "./types";
+import { ChecklistItem, Colecao, Evento, Fornecedor, LancamentoFinanceiro } from "./types";
 
 export const colecoes: Colecao[] = [
   { id: "sonhos", nome: "Sonhos", emoji: "☁️", descricao: "Nuvens, estrelas, lua e luzinhas." },
@@ -115,6 +115,13 @@ export const eventos: Evento[] = [
   },
 ];
 
+export const fornecedores: Fornecedor[] = [
+  { id: "forn-spa", nome: "Spa Kids Glow", categoria: "Spa", contato: "11 91234-0001" },
+  { id: "forn-criadoras", nome: "Ateliê das Criadoras", categoria: "Criadoras / Decoração", contato: "11 91234-0002" },
+  { id: "forn-pijamas", nome: "Sonho de Pijama", categoria: "Fornecedora de Pijamas", contato: "11 91234-0003" },
+  { id: "forn-foto", nome: "Bella Fotografias", categoria: "Fotografia", contato: "11 91234-0004" },
+];
+
 export const lancamentos: LancamentoFinanceiro[] = [
   { id: "f1", descricao: "Sinal 50% - Festa Arthur", categoria: "Reserva (sinal)", tipo: "receita", valor: 450, data: "2026-06-20", eventoId: "evt-arthur" },
   { id: "f2", descricao: "Saldo final - Festa Arthur", categoria: "Saldo final", tipo: "receita", valor: 450, data: "2026-07-04", eventoId: "evt-arthur" },
@@ -126,4 +133,6 @@ export const lancamentos: LancamentoFinanceiro[] = [
   { id: "f8", descricao: "Combustível - montagem/desmontagem", categoria: "Transporte / Frete", tipo: "despesa", valor: 90, data: "2026-07-04" },
   { id: "f9", descricao: "Impulsionamento Instagram", categoria: "Marketing", tipo: "despesa", valor: 60, data: "2026-07-01" },
   { id: "f10", descricao: "Reposição de pisca-pisca queimado", categoria: "Manutenção", tipo: "despesa", valor: 45, data: "2026-06-29" },
+  { id: "f11", descricao: "Spa da Helena", categoria: "Spa", tipo: "despesa", valor: 90, data: "2026-07-11", eventoId: "evt-helena", fornecedorId: "forn-spa" },
+  { id: "f12", descricao: "Fotos da festa da Maria Clara", categoria: "Fotografia", tipo: "despesa", valor: 150, data: "2026-07-18", eventoId: "evt-maria-clara", fornecedorId: "forn-foto" },
 ];
