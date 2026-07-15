@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRole } from "@/lib/role-context";
-import logo from "@/public/logo.jpeg";
+import logo from "@/public/logo.png";
 
 export default function LoginPage() {
   const { login } = useRole();

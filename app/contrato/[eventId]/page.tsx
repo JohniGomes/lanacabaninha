@@ -7,7 +7,7 @@ import { aceitarContrato, getEvento } from "@/lib/storage";
 import { Evento } from "@/lib/types";
 import { formatCurrency, formatDateLong } from "@/lib/format";
 import { IconCheckCircle, IconClock } from "@/components/Icons";
-import logo from "@/public/logo.jpeg";
+import logo from "@/public/logo.png";
 
 export default function ContratoPage() {
   const params = useParams<{ eventId: string }>();

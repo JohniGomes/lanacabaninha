@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { colecoes } from "@/lib/mock-data";
 import { addEvento } from "@/lib/storage";
 import { CaminhoFesta, ChecklistItem, Evento } from "@/lib/types";
-import logo from "@/public/logo.jpeg";
+import logo from "@/public/logo.png";
 
 interface FormState {
   caminho: CaminhoFesta | null;

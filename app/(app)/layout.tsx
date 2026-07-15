@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRole } from "@/lib/role-context";
 import { BottomNav } from "@/components/BottomNav";
-import logo from "@/public/logo.jpeg";
+import logo from "@/public/logo.png";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { role, ready } = useRole();
