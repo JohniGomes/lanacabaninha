@@ -48,6 +48,9 @@ export default function ContratoPage() {
                 ? new Date(evento.contratoAceitoEm).toLocaleString("pt-BR")
                 : "—"}
             </p>
+            <p className="mt-3 text-xs text-muted">
+              Nossa equipe já foi avisada e entra em contato pelo WhatsApp em breve. ✨
+            </p>
           </div>
         ) : (
           <>

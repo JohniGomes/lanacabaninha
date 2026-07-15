@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { colecoes } from "@/lib/mock-data";
 import { addEvento } from "@/lib/storage";
 import { CaminhoFesta, ChecklistItem, Evento } from "@/lib/types";
@@ -54,9 +55,9 @@ function checklistInicial(): ChecklistItem[] {
 const TOTAL_STEPS = 4;
 
 export default function FormularioPublicoPage() {
+  const router = useRouter();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<FormState>(INITIAL_STATE);
-  const [enviado, setEnviado] = useState(false);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -91,20 +92,7 @@ export default function FormularioPublicoPage() {
       checklist: checklistInicial(),
     };
     addEvento(evento);
-    setEnviado(true);
-  }
-
-  if (enviado) {
-    return (
-      <div className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center">
-        <span className="text-5xl">💜</span>
-        <h1 className="mt-3 font-display text-4xl text-pink-dark">Prontinho!</h1>
-        <p className="mt-2 max-w-xs text-sm text-muted">
-          Recebemos os dados de {form.aniversariante}. Nossa equipe já vai começar a criar a
-          decoração e entra em contato pelo WhatsApp em breve. ✨
-        </p>
-      </div>
-    );
+    router.push(`/contrato/${evento.id}`);
   }
 
   return (
