@@ -7,6 +7,8 @@ export interface ChecklistItem {
   nome: string;
   quantidade: number;
   status: StatusItem;
+  danificado?: boolean;
+  observacaoDano?: string;
 }
 
 export type CaminhoFesta = "personalizada" | "assinada";
@@ -17,6 +19,7 @@ export interface Evento {
   idade?: number;
   contatoNome: string;
   contatoTelefone?: string;
+  contatoEmail?: string;
   endereco: string;
   data: string;
   horario: string;
@@ -33,6 +36,13 @@ export interface Evento {
   checklist: ChecklistItem[];
   contratoAceito?: boolean;
   contratoAceitoEm?: string;
+  cpfContratante?: string;
+  rgContratante?: string;
+  quantidadeCabanas?: number;
+  valorContrato?: number;
+  formaPagamento?: string;
+  itensAlugados?: string;
+  itensAdicionais?: string;
 }
 
 export type TipoLancamento = "receita" | "despesa";

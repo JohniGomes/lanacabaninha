@@ -62,13 +62,66 @@ export function toggleChecklistItem(eventoId: string, itemId: string) {
   return updated.find((e) => e.id === eventoId);
 }
 
-export function aceitarContrato(eventoId: string) {
+export function aceitarContrato(eventoId: string, dados: { cpf: string; rg: string }) {
   const eventos = getEventos();
   const updated = eventos.map((evento) =>
     evento.id === eventoId
-      ? { ...evento, contratoAceito: true, contratoAceitoEm: new Date().toISOString() }
+      ? {
+          ...evento,
+          contratoAceito: true,
+          contratoAceitoEm: new Date().toISOString(),
+          cpfContratante: dados.cpf,
+          rgContratante: dados.rg,
+        }
       : evento
   );
+  saveEventos(updated);
+  return updated.find((e) => e.id === eventoId);
+}
+
+export interface DadosContrato {
+  quantidadeCabanas?: number;
+  valorContrato?: number;
+  formaPagamento?: string;
+  itensAlugados?: string;
+  itensAdicionais?: string;
+}
+
+export function atualizarDadosContrato(eventoId: string, dados: DadosContrato) {
+  const eventos = getEventos();
+  const updated = eventos.map((evento) =>
+    evento.id === eventoId ? { ...evento, ...dados } : evento
+  );
+  saveEventos(updated);
+  return updated.find((e) => e.id === eventoId);
+}
+
+export function marcarDanificado(eventoId: string, itemId: string, observacao: string) {
+  const eventos = getEventos();
+  const updated = eventos.map((evento) => {
+    if (evento.id !== eventoId) return evento;
+    return {
+      ...evento,
+      checklist: evento.checklist.map((item) =>
+        item.id === itemId ? { ...item, danificado: true, observacaoDano: observacao } : item
+      ),
+    };
+  });
+  saveEventos(updated);
+  return updated.find((e) => e.id === eventoId);
+}
+
+export function desmarcarDanificado(eventoId: string, itemId: string) {
+  const eventos = getEventos();
+  const updated = eventos.map((evento) => {
+    if (evento.id !== eventoId) return evento;
+    return {
+      ...evento,
+      checklist: evento.checklist.map((item) =>
+        item.id === itemId ? { ...item, danificado: false, observacaoDano: undefined } : item
+      ),
+    };
+  });
   saveEventos(updated);
   return updated.find((e) => e.id === eventoId);
 }

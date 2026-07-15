@@ -1,12 +1,21 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { addEstoqueItem, deleteEstoqueItem, getEstoque, updateEstoqueItem } from "@/lib/storage";
-import { EstoqueItem } from "@/lib/types";
-import { IconTrash } from "@/components/Icons";
+import {
+  addEstoqueItem,
+  deleteEstoqueItem,
+  desmarcarDanificado,
+  getEstoque,
+  getEventos,
+  updateEstoqueItem,
+} from "@/lib/storage";
+import { Evento, EstoqueItem } from "@/lib/types";
+import { IconAlertTriangle, IconTrash } from "@/components/Icons";
+import { formatDate } from "@/lib/format";
 
 export default function EstoquePage() {
   const [itens, setItens] = useState<EstoqueItem[]>([]);
+  const [eventos, setEventos] = useState<Evento[]>([]);
   const [busca, setBusca] = useState("");
   const [abertas, setAbertas] = useState<Set<string>>(new Set());
   const [formAberto, setFormAberto] = useState(false);
@@ -17,7 +26,23 @@ export default function EstoquePage() {
 
   useEffect(() => {
     setItens(getEstoque());
+    setEventos(getEventos());
   }, []);
+
+  const itensDanificados = useMemo(
+    () =>
+      eventos.flatMap((evento) =>
+        evento.checklist
+          .filter((item) => item.danificado)
+          .map((item) => ({ evento, item }))
+      ),
+    [eventos]
+  );
+
+  function resolverDano(eventoId: string, itemId: string) {
+    desmarcarDanificado(eventoId, itemId);
+    setEventos(getEventos());
+  }
 
   const categorias = useMemo(
     () => [...new Set(itens.map((i) => i.categoria))].sort((a, b) => a.localeCompare(b)),
@@ -92,6 +117,37 @@ export default function EstoquePage() {
           {totalItens} itens cadastrados · {totalUnidades} unidades no total
         </p>
       </div>
+
+      {itensDanificados.length > 0 && (
+        <section>
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
+            Itens danificados
+          </h2>
+          <div className="space-y-2">
+            {itensDanificados.map(({ evento, item }) => (
+              <div
+                key={`${evento.id}-${item.id}`}
+                className="flex items-start gap-2 rounded-xl border border-pink-dark/30 bg-pink/15 px-4 py-3"
+              >
+                <IconAlertTriangle className="h-4 w-4 shrink-0 translate-y-0.5 text-pink-dark" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium">{item.nome}</p>
+                  <p className="text-xs text-muted">
+                    {evento.aniversariante} · {formatDate(evento.data)}
+                  </p>
+                  <p className="mt-0.5 text-xs text-pink-dark">{item.observacaoDano}</p>
+                </div>
+                <button
+                  onClick={() => resolverDano(evento.id, item.id)}
+                  className="shrink-0 rounded-lg border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-foreground"
+                >
+                  Resolver
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <input
         value={busca}

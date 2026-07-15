@@ -25,6 +25,7 @@ export function EventCard({ evento }: { evento: Evento }) {
           <p className="truncate text-sm text-muted">
             {colecao ? colecao.nome : evento.tema}
           </p>
+          <p className="truncate text-xs text-muted">{evento.endereco}</p>
         </div>
         <span className="shrink-0 rounded-full bg-mint/40 px-2.5 py-1 text-xs font-semibold text-mint-dark">
           {retornados}/{totalItens}

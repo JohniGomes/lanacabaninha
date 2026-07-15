@@ -16,6 +16,7 @@ interface FormState {
   idade: string;
   contatoNome: string;
   contatoTelefone: string;
+  contatoEmail: string;
   endereco: string;
   data: string;
   horario: string;
@@ -33,6 +34,7 @@ const INITIAL_STATE: FormState = {
   idade: "",
   contatoNome: "",
   contatoTelefone: "",
+  contatoEmail: "",
   endereco: "",
   data: "",
   horario: "",
@@ -78,6 +80,7 @@ export default function FormularioPublicoPage() {
       idade: form.idade ? Number(form.idade) : undefined,
       contatoNome: form.contatoNome.trim() || form.aniversariante.trim(),
       contatoTelefone: form.contatoTelefone.trim() || undefined,
+      contatoEmail: form.contatoEmail.trim() || undefined,
       endereco: form.endereco.trim(),
       data: form.data,
       horario: form.horario,
@@ -160,6 +163,7 @@ export default function FormularioPublicoPage() {
               <Field label="Idade" value={form.idade} onChange={(v) => update("idade", v)} type="number" />
               <Field label="Nome de quem está organizando" value={form.contatoNome} onChange={(v) => update("contatoNome", v)} />
               <Field label="WhatsApp" value={form.contatoTelefone} onChange={(v) => update("contatoTelefone", v)} placeholder="(11) 90000-0000" />
+              <Field label="E-mail" value={form.contatoEmail} onChange={(v) => update("contatoEmail", v)} type="email" placeholder="voce@email.com" />
               <Field label="Endereço da festa" value={form.endereco} onChange={(v) => update("endereco", v)} />
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Data" value={form.data} onChange={(v) => update("data", v)} type="date" />

@@ -3,11 +3,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Role } from "./types";
 import { clearRole, getRole, setRole as persistRole } from "./storage";
+import { validarLogin } from "./auth-data";
 
 interface RoleContextValue {
   role: Role | null;
   ready: boolean;
-  login: (role: Role) => void;
+  login: (email: string, senha: string) => boolean;
   logout: () => void;
 }
 
@@ -22,9 +23,12 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
     setReady(true);
   }, []);
 
-  function login(role: Role) {
+  function login(email: string, senha: string) {
+    const role = validarLogin(email, senha);
+    if (!role) return false;
     persistRole(role);
     setRoleState(role);
+    return true;
   }
 
   function logout() {

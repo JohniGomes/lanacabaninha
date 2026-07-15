@@ -7,7 +7,7 @@ import { getEventos, getLancamentos } from "@/lib/storage";
 import { Evento, LancamentoFinanceiro } from "@/lib/types";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { useRole } from "@/lib/role-context";
-import { IconBasket, IconCalendar, IconWallet } from "@/components/Icons";
+import { IconAlertTriangle, IconCalendar, IconWallet } from "@/components/Icons";
 
 const HOJE = new Date().toISOString().slice(0, 10);
 
@@ -29,16 +29,12 @@ export default function DashboardPage() {
   const proximosEventos = [...eventos]
     .filter((e) => e.data >= HOJE)
     .sort((a, b) => a.data.localeCompare(b.data))
-    .slice(0, 3);
+    .slice(0, 5);
 
-  const eventosComPendencia = eventos
-    .map((e) => ({
-      evento: e,
-      pendentes: e.checklist.filter((i) => i.status === "enviado").length,
-    }))
-    .filter((e) => e.pendentes > 0);
-
-  const totalPendencias = eventosComPendencia.reduce((acc, e) => acc + e.pendentes, 0);
+  const totalDanificados = eventos.reduce(
+    (acc, e) => acc + e.checklist.filter((i) => i.danificado).length,
+    0
+  );
 
   return (
     <div className="space-y-6">
@@ -64,17 +60,17 @@ export default function DashboardPage() {
           accent="pink"
         />
         <StatCard
-          icon={<IconBasket className="h-5 w-5" />}
-          label="Itens aguardando retorno"
-          value={String(totalPendencias)}
-          hint={totalPendencias > 0 ? "Ainda não voltaram de uma festa" : "Tudo em dia"}
+          icon={<IconAlertTriangle className="h-5 w-5" />}
+          label="Itens danificados"
+          value={String(totalDanificados)}
+          hint={totalDanificados > 0 ? "Precisam de atenção" : "Tudo em dia"}
           accent="lilac"
         />
       </div>
 
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
-          Próximos eventos
+          Próximas 5 festas
         </h2>
         {proximosEventos.length === 0 ? (
           <p className="text-sm text-muted">Nenhum evento futuro cadastrado.</p>
@@ -86,28 +82,6 @@ export default function DashboardPage() {
           </div>
         )}
       </section>
-
-      {eventosComPendencia.length > 0 && (
-        <section>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
-            Pendências de checklist
-          </h2>
-          <div className="space-y-2">
-            {eventosComPendencia.map(({ evento, pendentes }) => (
-              <a
-                key={evento.id}
-                href={`/calendario/${evento.id}`}
-                className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3 text-sm"
-              >
-                <span className="font-medium">{evento.aniversariante}</span>
-                <span className="rounded-full bg-pink/40 px-2.5 py-0.5 text-xs font-semibold text-pink-dark">
-                  {pendentes} item(ns) fora
-                </span>
-              </a>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }

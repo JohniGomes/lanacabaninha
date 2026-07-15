@@ -5,19 +5,40 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChecklistItemRow } from "@/components/ChecklistItemRow";
 import { IconArrowLeft, IconCheckCircle, IconClock, IconLink } from "@/components/Icons";
-import { getEvento, toggleChecklistItem } from "@/lib/storage";
+import {
+  atualizarDadosContrato,
+  desmarcarDanificado,
+  getEvento,
+  marcarDanificado,
+  toggleChecklistItem,
+} from "@/lib/storage";
 import { colecoes } from "@/lib/mock-data";
 import { Evento } from "@/lib/types";
-import { formatDateLong } from "@/lib/format";
+import { formatCurrency, formatDateLong } from "@/lib/format";
 
 export default function EventoDetalhePage() {
   const params = useParams<{ eventId: string }>();
   const router = useRouter();
   const [evento, setEvento] = useState<Evento | null | undefined>(undefined);
   const [copiado, setCopiado] = useState(false);
+  const [formContratoAberto, setFormContratoAberto] = useState(false);
+
+  const [quantidadeCabanas, setQuantidadeCabanas] = useState("");
+  const [valorContrato, setValorContrato] = useState("");
+  const [formaPagamento, setFormaPagamento] = useState("");
+  const [itensAlugados, setItensAlugados] = useState("");
+  const [itensAdicionais, setItensAdicionais] = useState("");
 
   useEffect(() => {
-    setEvento(getEvento(params.eventId) ?? null);
+    const e = getEvento(params.eventId) ?? null;
+    setEvento(e);
+    if (e) {
+      setQuantidadeCabanas(e.quantidadeCabanas ? String(e.quantidadeCabanas) : "");
+      setValorContrato(e.valorContrato ? String(e.valorContrato) : "");
+      setFormaPagamento(e.formaPagamento ?? "");
+      setItensAlugados(e.itensAlugados ?? "");
+      setItensAdicionais(e.itensAdicionais ?? "");
+    }
   }, [params.eventId]);
 
   function copiarLinkContrato() {
@@ -26,6 +47,18 @@ export default function EventoDetalhePage() {
       setCopiado(true);
       setTimeout(() => setCopiado(false), 2000);
     });
+  }
+
+  function salvarDadosContrato() {
+    const atualizado = atualizarDadosContrato(params.eventId, {
+      quantidadeCabanas: quantidadeCabanas ? Number(quantidadeCabanas) : undefined,
+      valorContrato: valorContrato ? Number(valorContrato) : undefined,
+      formaPagamento: formaPagamento.trim() || undefined,
+      itensAlugados: itensAlugados.trim() || undefined,
+      itensAdicionais: itensAdicionais.trim() || undefined,
+    });
+    if (atualizado) setEvento(atualizado);
+    setFormContratoAberto(false);
   }
 
   if (evento === undefined) {
@@ -46,8 +79,18 @@ export default function EventoDetalhePage() {
   const colecao = evento.colecaoId ? colecoes.find((c) => c.id === evento.colecaoId) : undefined;
   const retornados = evento.checklist.filter((i) => i.status === "retornado").length;
 
-  function handleToggle(itemId: string) {
+  function handleToggleStatus(itemId: string) {
     const atualizado = toggleChecklistItem(params.eventId, itemId);
+    if (atualizado) setEvento(atualizado);
+  }
+
+  function handleMarcarDanificado(itemId: string, observacao: string) {
+    const atualizado = marcarDanificado(params.eventId, itemId, observacao);
+    if (atualizado) setEvento(atualizado);
+  }
+
+  function handleDesmarcarDanificado(itemId: string) {
+    const atualizado = desmarcarDanificado(params.eventId, itemId);
     if (atualizado) setEvento(atualizado);
   }
 
@@ -113,6 +156,75 @@ export default function EventoDetalhePage() {
             </button>
           </div>
         )}
+
+        <div className="mt-3 rounded-2xl border border-border bg-surface p-4">
+          {!formContratoAberto ? (
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 text-sm">
+                {evento.valorContrato ? (
+                  <>
+                    <p className="font-semibold text-foreground">{formatCurrency(evento.valorContrato)}</p>
+                    <p className="truncate text-xs text-muted">
+                      {evento.formaPagamento}
+                      {evento.quantidadeCabanas ? ` · ${evento.quantidadeCabanas} cabana(s)` : ""}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-xs text-muted">Dados do contrato ainda não preenchidos</p>
+                )}
+              </div>
+              <button
+                onClick={() => setFormContratoAberto(true)}
+                className="shrink-0 rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-foreground"
+              >
+                {evento.valorContrato ? "Editar" : "Preencher"}
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <LabeledInput
+                  label="Qtd. cabanas"
+                  value={quantidadeCabanas}
+                  onChange={setQuantidadeCabanas}
+                  type="number"
+                />
+                <LabeledInput
+                  label="Valor (R$)"
+                  value={valorContrato}
+                  onChange={setValorContrato}
+                  type="number"
+                />
+              </div>
+              <LabeledInput
+                label="Forma de pagamento"
+                value={formaPagamento}
+                onChange={setFormaPagamento}
+                placeholder="Ex.: 50% Pix na assinatura + 50% na montagem"
+              />
+              <LabeledTextArea label="Itens alugados" value={itensAlugados} onChange={setItensAlugados} />
+              <LabeledTextArea
+                label="Itens de compra / serviços adicionais"
+                value={itensAdicionais}
+                onChange={setItensAdicionais}
+              />
+              <div className="flex gap-3 pt-1">
+                <button
+                  onClick={() => setFormContratoAberto(false)}
+                  className="flex-1 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-foreground"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={salvarDadosContrato}
+                  className="flex-1 rounded-xl bg-pink-dark px-4 py-2.5 text-sm font-semibold text-white"
+                >
+                  Salvar
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </section>
 
       <section>
@@ -124,7 +236,13 @@ export default function EventoDetalhePage() {
         </div>
         <div className="space-y-2">
           {evento.checklist.map((item) => (
-            <ChecklistItemRow key={item.id} item={item} onToggle={handleToggle} />
+            <ChecklistItemRow
+              key={item.id}
+              item={item}
+              onToggleStatus={handleToggleStatus}
+              onMarcarDanificado={handleMarcarDanificado}
+              onDesmarcarDanificado={handleDesmarcarDanificado}
+            />
           ))}
         </div>
         <p className="mt-3 text-center text-xs text-muted">Toque num item pra alternar o status</p>
@@ -139,5 +257,54 @@ function Row({ label, value }: { label: string; value: string }) {
       <dt className="w-28 shrink-0 text-muted">{label}</dt>
       <dd className="text-foreground">{value}</dd>
     </div>
+  );
+}
+
+function LabeledInput({
+  label,
+  value,
+  onChange,
+  type = "text",
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+  placeholder?: string;
+}) {
+  return (
+    <label className="block text-sm">
+      <span className="mb-1 block font-medium text-muted">{label}</span>
+      <input
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full rounded-xl border border-border bg-cream px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
+      />
+    </label>
+  );
+}
+
+function LabeledTextArea({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <label className="block text-sm">
+      <span className="mb-1 block font-medium text-muted">{label}</span>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        rows={2}
+        className="w-full rounded-xl border border-border bg-cream px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
+      />
+    </label>
   );
 }
