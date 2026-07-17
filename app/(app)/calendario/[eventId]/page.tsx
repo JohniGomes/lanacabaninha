@@ -6,22 +6,30 @@ import Link from "next/link";
 import { ChecklistItemRow } from "@/components/ChecklistItemRow";
 import { IconArrowLeft, IconCheckCircle, IconClock, IconLink } from "@/components/Icons";
 import {
+  addChecklistItem,
   atualizarDadosContrato,
   desmarcarDanificado,
+  getEstoque,
   getEvento,
   marcarDanificado,
+  removeChecklistItem,
   toggleChecklistItem,
+  updateChecklistItem,
 } from "@/lib/storage";
 import { colecoes } from "@/lib/mock-data";
-import { Evento } from "@/lib/types";
+import { EstoqueItem, Evento } from "@/lib/types";
 import { formatCurrency, formatDateLong } from "@/lib/format";
 
 export default function EventoDetalhePage() {
   const params = useParams<{ eventId: string }>();
   const router = useRouter();
   const [evento, setEvento] = useState<Evento | null | undefined>(undefined);
+  const [estoqueItens, setEstoqueItens] = useState<EstoqueItem[]>([]);
   const [copiado, setCopiado] = useState(false);
   const [formContratoAberto, setFormContratoAberto] = useState(false);
+  const [formNovoItemAberto, setFormNovoItemAberto] = useState(false);
+  const [novoItemNome, setNovoItemNome] = useState("");
+  const [novoItemQuantidade, setNovoItemQuantidade] = useState("1");
 
   const [quantidadeCabanas, setQuantidadeCabanas] = useState("");
   const [valorContrato, setValorContrato] = useState("");
@@ -32,6 +40,7 @@ export default function EventoDetalhePage() {
   useEffect(() => {
     const e = getEvento(params.eventId) ?? null;
     setEvento(e);
+    setEstoqueItens(getEstoque());
     if (e) {
       setQuantidadeCabanas(e.quantidadeCabanas ? String(e.quantidadeCabanas) : "");
       setValorContrato(e.valorContrato ? String(e.valorContrato) : "");
@@ -84,14 +93,43 @@ export default function EventoDetalhePage() {
     if (atualizado) setEvento(atualizado);
   }
 
-  function handleMarcarDanificado(itemId: string, observacao: string) {
-    const atualizado = marcarDanificado(params.eventId, itemId, observacao);
+  function handleMarcarDanificado(
+    itemId: string,
+    dados: { observacao: string; estoqueItemId?: string; quantidadeDanificada?: number }
+  ) {
+    const atualizado = marcarDanificado(params.eventId, itemId, dados);
     if (atualizado) setEvento(atualizado);
+    setEstoqueItens(getEstoque());
   }
 
   function handleDesmarcarDanificado(itemId: string) {
     const atualizado = desmarcarDanificado(params.eventId, itemId);
     if (atualizado) setEvento(atualizado);
+    setEstoqueItens(getEstoque());
+  }
+
+  function handleEditarItem(itemId: string, dados: { nome: string; quantidade: number }) {
+    const atualizado = updateChecklistItem(params.eventId, itemId, dados);
+    if (atualizado) setEvento(atualizado);
+  }
+
+  function handleExcluirItem(itemId: string) {
+    const atualizado = removeChecklistItem(params.eventId, itemId);
+    if (atualizado) setEvento(atualizado);
+  }
+
+  function handleAdicionarItem() {
+    if (!novoItemNome.trim() || Number(novoItemQuantidade) <= 0) return;
+    const atualizado = addChecklistItem(params.eventId, {
+      id: crypto.randomUUID(),
+      nome: novoItemNome.trim(),
+      quantidade: Number(novoItemQuantidade),
+      status: "pendente",
+    });
+    if (atualizado) setEvento(atualizado);
+    setNovoItemNome("");
+    setNovoItemQuantidade("1");
+    setFormNovoItemAberto(false);
   }
 
   return (
@@ -239,13 +277,60 @@ export default function EventoDetalhePage() {
             <ChecklistItemRow
               key={item.id}
               item={item}
+              estoqueItens={estoqueItens}
               onToggleStatus={handleToggleStatus}
               onMarcarDanificado={handleMarcarDanificado}
               onDesmarcarDanificado={handleDesmarcarDanificado}
+              onEditar={handleEditarItem}
+              onExcluir={handleExcluirItem}
             />
           ))}
         </div>
         <p className="mt-3 text-center text-xs text-muted">Toque num item pra alternar o status</p>
+
+        <div className="mt-3">
+          {!formNovoItemAberto ? (
+            <button
+              onClick={() => setFormNovoItemAberto(true)}
+              className="w-full rounded-xl border border-dashed border-border px-4 py-2.5 text-sm font-semibold text-muted"
+            >
+              + Adicionar item
+            </button>
+          ) : (
+            <div className="space-y-2 rounded-xl border border-border bg-surface p-3">
+              <div className="grid grid-cols-3 gap-2">
+                <input
+                  value={novoItemNome}
+                  onChange={(e) => setNovoItemNome(e.target.value)}
+                  placeholder="Nome do item"
+                  className="col-span-2 rounded-lg border border-border bg-cream px-3 py-2 text-sm outline-none focus:border-pink-dark"
+                />
+                <input
+                  type="number"
+                  min={1}
+                  value={novoItemQuantidade}
+                  onChange={(e) => setNovoItemQuantidade(e.target.value)}
+                  className="rounded-lg border border-border bg-cream px-3 py-2 text-sm outline-none focus:border-pink-dark"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setFormNovoItemAberto(false)}
+                  className="flex-1 rounded-lg border border-border py-1.5 text-xs font-semibold text-foreground"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleAdicionarItem}
+                  disabled={!novoItemNome.trim()}
+                  className="flex-1 rounded-lg bg-pink-dark py-1.5 text-xs font-semibold text-white disabled:opacity-40"
+                >
+                  Salvar
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </section>
     </div>
   );

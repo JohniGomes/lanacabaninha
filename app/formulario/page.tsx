@@ -5,13 +5,11 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { colecoes } from "@/lib/mock-data";
 import { addEvento } from "@/lib/storage";
-import { CaminhoFesta, ChecklistItem, Evento } from "@/lib/types";
+import { ChecklistItem, Evento } from "@/lib/types";
 import logo from "@/public/logo.png";
 
 interface FormState {
-  caminho: CaminhoFesta | null;
   colecaoId?: string;
-  tema: string;
   aniversariante: string;
   idade: string;
   contatoNome: string;
@@ -27,9 +25,7 @@ interface FormState {
 }
 
 const INITIAL_STATE: FormState = {
-  caminho: null,
   colecaoId: undefined,
-  tema: "",
   aniversariante: "",
   idade: "",
   contatoNome: "",
@@ -54,7 +50,7 @@ function checklistInicial(): ChecklistItem[] {
   ];
 }
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 3;
 
 export default function FormularioPublicoPage() {
   const router = useRouter();
@@ -66,10 +62,9 @@ export default function FormularioPublicoPage() {
   }
 
   function podeAvancar() {
-    if (step === 0) return form.caminho !== null;
-    if (step === 1) return form.caminho === "assinada" ? !!form.colecaoId : form.tema.trim().length > 0;
-    if (step === 2) return form.aniversariante.trim() && form.endereco.trim() && form.data && form.horario;
-    if (step === 3) return form.aceitaPrivacidade;
+    if (step === 0) return !!form.colecaoId;
+    if (step === 1) return form.aniversariante.trim() && form.endereco.trim() && form.data && form.horario;
+    if (step === 2) return form.aceitaPrivacidade;
     return true;
   }
 
@@ -84,11 +79,9 @@ export default function FormularioPublicoPage() {
       endereco: form.endereco.trim(),
       data: form.data,
       horario: form.horario,
-      tema: form.caminho === "assinada"
-        ? colecoes.find((c) => c.id === form.colecaoId)?.nome ?? ""
-        : form.tema.trim(),
-      caminho: form.caminho ?? "personalizada",
-      colecaoId: form.caminho === "assinada" ? form.colecaoId : undefined,
+      tema: colecoes.find((c) => c.id === form.colecaoId)?.nome ?? "",
+      caminho: "assinada",
+      colecaoId: form.colecaoId,
       corFavorita: form.corFavorita.trim() || undefined,
       corNaoGosta: form.corNaoGosta.trim() || undefined,
       naoPodeFaltar: form.naoPodeFaltar.trim() || undefined,
@@ -111,25 +104,7 @@ export default function FormularioPublicoPage() {
         <div className="mt-6 space-y-5">
           {step === 0 && (
             <div className="space-y-3">
-              <p className="text-sm font-semibold">1. Como você quer criar a festa?</p>
-              <OptionCard
-                selected={form.caminho === "personalizada"}
-                onClick={() => update("caminho", "personalizada")}
-                title="Festa Personalizada"
-                subtitle="Você escolhe o tema e as cores do zero"
-              />
-              <OptionCard
-                selected={form.caminho === "assinada"}
-                onClick={() => update("caminho", "assinada")}
-                title="Experiência Assinada"
-                subtitle="Escolha uma das nossas coleções prontas · 5% de desconto"
-              />
-            </div>
-          )}
-
-          {step === 1 && form.caminho === "assinada" && (
-            <div className="space-y-3">
-              <p className="text-sm font-semibold">2. Qual coleção combina mais?</p>
+              <p className="text-sm font-semibold">1. Qual coleção combina mais?</p>
               <div className="grid grid-cols-1 gap-2.5">
                 {colecoes.map((c) => (
                   <OptionCard
@@ -144,21 +119,9 @@ export default function FormularioPublicoPage() {
             </div>
           )}
 
-          {step === 1 && form.caminho === "personalizada" && (
+          {step === 1 && (
             <div className="space-y-3">
-              <p className="text-sm font-semibold">2. Qual é o tema da festa?</p>
-              <Field
-                label="Tema"
-                value={form.tema}
-                onChange={(v) => update("tema", v)}
-                placeholder="Ex.: Futebol, Unicórnios, Copa do Mundo..."
-              />
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-3">
-              <p className="text-sm font-semibold">3. Dados da festa</p>
+              <p className="text-sm font-semibold">2. Dados da festa</p>
               <Field label="Nome da aniversariante" value={form.aniversariante} onChange={(v) => update("aniversariante", v)} />
               <Field label="Idade" value={form.idade} onChange={(v) => update("idade", v)} type="number" />
               <Field label="Nome de quem está organizando" value={form.contatoNome} onChange={(v) => update("contatoNome", v)} />
@@ -172,9 +135,9 @@ export default function FormularioPublicoPage() {
             </div>
           )}
 
-          {step === 3 && (
+          {step === 2 && (
             <div className="space-y-3">
-              <p className="text-sm font-semibold">4. Últimos detalhes</p>
+              <p className="text-sm font-semibold">3. Últimos detalhes</p>
               <Field label="Cores favoritas da aniversariante" value={form.corFavorita} onChange={(v) => update("corFavorita", v)} />
               <Field label="Alguma cor que ela não gosta?" value={form.corNaoGosta} onChange={(v) => update("corNaoGosta", v)} />
               <TextArea

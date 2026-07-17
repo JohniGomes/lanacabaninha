@@ -141,3 +141,20 @@ export function IconClock({ className = "w-5 h-5" }: IconProps) {
     </svg>
   );
 }
+
+export function IconPencil({ className = "w-5 h-5" }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+    </svg>
+  );
+}
+
+export function IconPlus({ className = "w-5 h-5" }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}

@@ -1,18 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { aceitarContrato, getEvento } from "@/lib/storage";
 import { Evento } from "@/lib/types";
 import { formatCurrency, formatDateLong } from "@/lib/format";
-import { IconCheckCircle, IconClock } from "@/components/Icons";
+import { IconArrowLeft, IconCheckCircle, IconClock } from "@/components/Icons";
 import logo from "@/public/logo.png";
 
 export default function ContratoPage() {
   const params = useParams<{ eventId: string }>();
+  const router = useRouter();
   const [evento, setEvento] = useState<Evento | null | undefined>(undefined);
   const [aceite, setAceite] = useState(false);
+  const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
   const [rg, setRg] = useState("");
 
@@ -20,14 +22,19 @@ export default function ContratoPage() {
     const e = getEvento(params.eventId) ?? null;
     setEvento(e);
     if (e) {
+      setNome(e.contatoNome ?? "");
       setCpf(e.cpfContratante ?? "");
       setRg(e.rgContratante ?? "");
     }
   }, [params.eventId]);
 
   function handleConfirmar() {
-    if (!cpf.trim() || !rg.trim()) return;
-    const atualizado = aceitarContrato(params.eventId, { cpf: cpf.trim(), rg: rg.trim() });
+    if (!nome.trim() || !cpf.trim() || !rg.trim()) return;
+    const atualizado = aceitarContrato(params.eventId, {
+      nome: nome.trim(),
+      cpf: cpf.trim(),
+      rg: rg.trim(),
+    });
     if (atualizado) setEvento(atualizado);
   }
 
@@ -64,15 +71,24 @@ export default function ContratoPage() {
             </p>
           </div>
         ) : !termosCompletos ? (
-          <div className="rounded-2xl border border-border bg-surface p-4 text-center">
-            <IconClock className="mx-auto h-8 w-8 text-muted" />
-            <p className="mt-2 text-sm font-semibold text-foreground">
-              Aguardando confirmação de valores
-            </p>
-            <p className="mt-1 text-xs text-muted">
-              Nossa equipe está finalizando os detalhes da sua festa. Assim que o valor e a forma
-              de pagamento forem confirmados, o contrato completo aparece aqui neste mesmo link.
-            </p>
+          <div className="space-y-3">
+            <div className="rounded-2xl border border-border bg-surface p-4 text-center">
+              <IconClock className="mx-auto h-8 w-8 text-muted" />
+              <p className="mt-2 text-sm font-semibold text-foreground">
+                Aguardando confirmação de valores
+              </p>
+              <p className="mt-1 text-xs text-muted">
+                Nossa equipe está finalizando os detalhes da sua festa. Assim que o valor e a
+                forma de pagamento forem confirmados, o contrato completo aparece aqui neste
+                mesmo link.
+              </p>
+            </div>
+            <button
+              onClick={() => router.push("/")}
+              className="flex w-full items-center justify-center gap-1.5 rounded-2xl border border-border bg-surface px-5 py-3 text-sm font-semibold text-foreground"
+            >
+              <IconArrowLeft className="h-4 w-4" /> Voltar
+            </button>
           </div>
         ) : (
           <>
@@ -89,7 +105,6 @@ export default function ContratoPage() {
 
                 <div>
                   <p className="font-semibold text-foreground">Contratante</p>
-                  <p>Nome: {evento.contatoNome}</p>
                   <p>Telefone: {evento.contatoTelefone || "—"}</p>
                   <p>E-mail: {evento.contatoEmail || "—"}</p>
                   <p>Endereço: {evento.endereco}</p>
@@ -162,14 +177,16 @@ export default function ContratoPage() {
               </div>
             </div>
 
-            <div className="mt-4 space-y-3">
+            <div className="mt-4 space-y-3 rounded-2xl border border-border bg-surface p-4">
+              <p className="text-center text-xs font-semibold uppercase tracking-wide text-muted">
+                Assinatura da contratante
+              </p>
               <label className="block text-sm">
-                <span className="mb-1 block font-medium text-muted">CPF</span>
+                <span className="mb-1 block font-medium text-muted">Nome completo</span>
                 <input
-                  value={cpf}
-                  onChange={(e) => setCpf(e.target.value)}
-                  placeholder="000.000.000-00"
-                  className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  className="w-full rounded-xl border border-border bg-cream px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
                 />
               </label>
               <label className="block text-sm">
@@ -178,7 +195,16 @@ export default function ContratoPage() {
                   value={rg}
                   onChange={(e) => setRg(e.target.value)}
                   placeholder="00.000.000-0"
-                  className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
+                  className="w-full rounded-xl border border-border bg-cream px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="mb-1 block font-medium text-muted">CPF</span>
+                <input
+                  value={cpf}
+                  onChange={(e) => setCpf(e.target.value)}
+                  placeholder="000.000.000-00"
+                  className="w-full rounded-xl border border-border bg-cream px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
                 />
               </label>
             </div>
@@ -195,7 +221,7 @@ export default function ContratoPage() {
 
             <button
               onClick={handleConfirmar}
-              disabled={!aceite || !cpf.trim() || !rg.trim()}
+              disabled={!aceite || !nome.trim() || !cpf.trim() || !rg.trim()}
               className="mt-4 w-full rounded-2xl bg-pink-dark px-5 py-3 text-sm font-semibold text-white disabled:opacity-40"
             >
               Confirmar aceite

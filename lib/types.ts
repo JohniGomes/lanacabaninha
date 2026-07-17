@@ -9,6 +9,8 @@ export interface ChecklistItem {
   status: StatusItem;
   danificado?: boolean;
   observacaoDano?: string;
+  estoqueItemId?: string;
+  quantidadeDanificada?: number;
 }
 
 export type CaminhoFesta = "personalizada" | "assinada";

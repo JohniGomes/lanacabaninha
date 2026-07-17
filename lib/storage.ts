@@ -1,6 +1,6 @@
 import { eventos as eventosMock, fornecedores as fornecedoresMock, lancamentos as lancamentosMock } from "./mock-data";
 import { estoqueInicial } from "./estoque-data";
-import { EstoqueItem, Evento, Fornecedor, LancamentoFinanceiro, Role, StatusItem } from "./types";
+import { ChecklistItem, EstoqueItem, Evento, Fornecedor, LancamentoFinanceiro, Role, StatusItem } from "./types";
 
 const EVENTOS_KEY = "lnc_eventos";
 const LANCAMENTOS_KEY = "lnc_lancamentos";
@@ -62,12 +62,13 @@ export function toggleChecklistItem(eventoId: string, itemId: string) {
   return updated.find((e) => e.id === eventoId);
 }
 
-export function aceitarContrato(eventoId: string, dados: { cpf: string; rg: string }) {
+export function aceitarContrato(eventoId: string, dados: { nome: string; cpf: string; rg: string }) {
   const eventos = getEventos();
   const updated = eventos.map((evento) =>
     evento.id === eventoId
       ? {
           ...evento,
+          contatoNome: dados.nome,
           contratoAceito: true,
           contratoAceitoEm: new Date().toISOString(),
           cpfContratante: dados.cpf,
@@ -96,14 +97,80 @@ export function atualizarDadosContrato(eventoId: string, dados: DadosContrato) {
   return updated.find((e) => e.id === eventoId);
 }
 
-export function marcarDanificado(eventoId: string, itemId: string, observacao: string) {
+export interface DadosDanificado {
+  observacao: string;
+  estoqueItemId?: string;
+  quantidadeDanificada?: number;
+}
+
+export function marcarDanificado(eventoId: string, itemId: string, dados: DadosDanificado) {
   const eventos = getEventos();
   const updated = eventos.map((evento) => {
     if (evento.id !== eventoId) return evento;
     return {
       ...evento,
       checklist: evento.checklist.map((item) =>
-        item.id === itemId ? { ...item, danificado: true, observacaoDano: observacao } : item
+        item.id === itemId
+          ? {
+              ...item,
+              danificado: true,
+              observacaoDano: dados.observacao,
+              estoqueItemId: dados.estoqueItemId,
+              quantidadeDanificada: dados.quantidadeDanificada,
+            }
+          : item
+      ),
+    };
+  });
+  saveEventos(updated);
+
+  if (dados.estoqueItemId && dados.quantidadeDanificada) {
+    const itens = getEstoque();
+    const alvo = itens.find((i) => i.id === dados.estoqueItemId);
+    if (alvo) {
+      saveEstoque(
+        itens.map((i) =>
+          i.id === dados.estoqueItemId
+            ? { ...i, quantidade: Math.max(0, i.quantidade - dados.quantidadeDanificada!) }
+            : i
+        )
+      );
+    }
+  }
+
+  return updated.find((e) => e.id === eventoId);
+}
+
+export function desmarcarDanificado(eventoId: string, itemId: string) {
+  const eventos = getEventos();
+  const eventoAtual = eventos.find((e) => e.id === eventoId);
+  const itemAtual = eventoAtual?.checklist.find((i) => i.id === itemId);
+
+  if (itemAtual?.estoqueItemId && itemAtual.quantidadeDanificada) {
+    const itens = getEstoque();
+    saveEstoque(
+      itens.map((i) =>
+        i.id === itemAtual.estoqueItemId
+          ? { ...i, quantidade: i.quantidade + itemAtual.quantidadeDanificada! }
+          : i
+      )
+    );
+  }
+
+  const updated = eventos.map((evento) => {
+    if (evento.id !== eventoId) return evento;
+    return {
+      ...evento,
+      checklist: evento.checklist.map((item) =>
+        item.id === itemId
+          ? {
+              ...item,
+              danificado: false,
+              observacaoDano: undefined,
+              estoqueItemId: undefined,
+              quantidadeDanificada: undefined,
+            }
+          : item
       ),
     };
   });
@@ -111,17 +178,41 @@ export function marcarDanificado(eventoId: string, itemId: string, observacao: s
   return updated.find((e) => e.id === eventoId);
 }
 
-export function desmarcarDanificado(eventoId: string, itemId: string) {
+export function addChecklistItem(eventoId: string, item: ChecklistItem) {
+  const eventos = getEventos();
+  const updated = eventos.map((evento) =>
+    evento.id === eventoId ? { ...evento, checklist: [...evento.checklist, item] } : evento
+  );
+  saveEventos(updated);
+  return updated.find((e) => e.id === eventoId);
+}
+
+export function updateChecklistItem(
+  eventoId: string,
+  itemId: string,
+  dados: { nome: string; quantidade: number }
+) {
   const eventos = getEventos();
   const updated = eventos.map((evento) => {
     if (evento.id !== eventoId) return evento;
     return {
       ...evento,
       checklist: evento.checklist.map((item) =>
-        item.id === itemId ? { ...item, danificado: false, observacaoDano: undefined } : item
+        item.id === itemId ? { ...item, ...dados } : item
       ),
     };
   });
+  saveEventos(updated);
+  return updated.find((e) => e.id === eventoId);
+}
+
+export function removeChecklistItem(eventoId: string, itemId: string) {
+  const eventos = getEventos();
+  const updated = eventos.map((evento) =>
+    evento.id === eventoId
+      ? { ...evento, checklist: evento.checklist.filter((item) => item.id !== itemId) }
+      : evento
+  );
   saveEventos(updated);
   return updated.find((e) => e.id === eventoId);
 }

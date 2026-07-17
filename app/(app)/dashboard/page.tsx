@@ -7,7 +7,7 @@ import { getEventos, getLancamentos } from "@/lib/storage";
 import { Evento, LancamentoFinanceiro } from "@/lib/types";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { useRole } from "@/lib/role-context";
-import { IconAlertTriangle, IconCalendar, IconWallet } from "@/components/Icons";
+import { IconCalendar, IconWallet } from "@/components/Icons";
 
 const HOJE = new Date().toISOString().slice(0, 10);
 
@@ -31,11 +31,6 @@ export default function DashboardPage() {
     .sort((a, b) => a.data.localeCompare(b.data))
     .slice(0, 5);
 
-  const totalDanificados = eventos.reduce(
-    (acc, e) => acc + e.checklist.filter((i) => i.danificado).length,
-    0
-  );
-
   return (
     <div className="space-y-6">
       <div>
@@ -58,13 +53,6 @@ export default function DashboardPage() {
           value={proximosEventos[0] ? proximosEventos[0].aniversariante : "Nenhum agendado"}
           hint={proximosEventos[0] ? formatDate(proximosEventos[0].data) : undefined}
           accent="pink"
-        />
-        <StatCard
-          icon={<IconAlertTriangle className="h-5 w-5" />}
-          label="Itens danificados"
-          value={String(totalDanificados)}
-          hint={totalDanificados > 0 ? "Precisam de atenção" : "Tudo em dia"}
-          accent="lilac"
         />
       </div>
 
