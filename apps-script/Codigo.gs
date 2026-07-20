@@ -100,6 +100,12 @@ function abaParaObjetos_(aba, nomeAba) {
   return resultado;
 }
 
+function padraoDeData_(nomeAba, coluna) {
+  if (nomeAba === "Eventos" && coluna === "horario") return "HH:mm";
+  if (nomeAba === "Eventos" && coluna === "contratoAceitoEm") return "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+  return "yyyy-MM-dd";
+}
+
 function linhaParaObjeto_(headers, linha, nomeAba) {
   var obj = {};
   for (var i = 0; i < headers.length; i++) {
@@ -116,7 +122,11 @@ function linhaParaObjeto_(headers, linha, nomeAba) {
     }
 
     if (Object.prototype.toString.call(valor) === "[object Date]") {
-      valor = Utilities.formatDate(valor, Session.getScriptTimeZone(), "yyyy-MM-dd");
+      valor = Utilities.formatDate(
+        valor,
+        Session.getScriptTimeZone(),
+        padraoDeData_(nomeAba, coluna)
+      );
     }
 
     if (typeof valor === "boolean") {
