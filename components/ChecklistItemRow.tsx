@@ -4,18 +4,6 @@ import { useState } from "react";
 import { ChecklistItem, EstoqueItem } from "@/lib/types";
 import { IconAlertTriangle, IconPencil, IconTrash } from "./Icons";
 
-const STATUS_STYLE: Record<ChecklistItem["status"], string> = {
-  pendente: "bg-zinc-100 text-zinc-500",
-  enviado: "bg-pink/40 text-pink-dark",
-  retornado: "bg-mint/40 text-mint-dark",
-};
-
-const STATUS_LABEL: Record<ChecklistItem["status"], string> = {
-  pendente: "Pendente",
-  enviado: "Enviado",
-  retornado: "Retornado",
-};
-
 function rotuloEstoque(item: EstoqueItem) {
   return `${item.categoria} — ${item.nome}`;
 }
@@ -23,23 +11,25 @@ function rotuloEstoque(item: EstoqueItem) {
 export function ChecklistItemRow({
   item,
   estoqueItens,
-  onToggleStatus,
   onMarcarDanificado,
   onDesmarcarDanificado,
   onEditar,
+  onEditarDescricao,
   onExcluir,
 }: {
   item: ChecklistItem;
   estoqueItens: EstoqueItem[];
-  onToggleStatus: (itemId: string) => void;
   onMarcarDanificado: (
     itemId: string,
     dados: { observacao: string; estoqueItemId?: string; quantidadeDanificada?: number }
   ) => void;
   onDesmarcarDanificado: (itemId: string) => void;
-  onEditar: (itemId: string, dados: { nome: string; quantidade: number }) => void;
+  onEditar: (itemId: string, dados: { nome: string; quantidade?: number }) => void;
+  onEditarDescricao: (itemId: string, descricao: string) => void;
   onExcluir: (itemId: string) => void;
 }) {
+  const isDescricaoItem = item.descricao !== undefined;
+
   const [formDanoAberto, setFormDanoAberto] = useState(false);
   const [observacao, setObservacao] = useState("");
   const [estoqueBusca, setEstoqueBusca] = useState("");
@@ -47,7 +37,8 @@ export function ChecklistItemRow({
 
   const [editando, setEditando] = useState(false);
   const [editNome, setEditNome] = useState(item.nome);
-  const [editQuantidade, setEditQuantidade] = useState(String(item.quantidade));
+  const [editQuantidade, setEditQuantidade] = useState(String(item.quantidade ?? 1));
+  const [descricaoLocal, setDescricaoLocal] = useState(item.descricao ?? "");
 
   const estoqueVinculado = item.estoqueItemId
     ? estoqueItens.find((e) => e.id === item.estoqueItemId)
@@ -68,8 +59,13 @@ export function ChecklistItemRow({
   }
 
   function salvarEdicao() {
-    if (!editNome.trim() || Number(editQuantidade) <= 0) return;
-    onEditar(item.id, { nome: editNome.trim(), quantidade: Number(editQuantidade) });
+    if (!editNome.trim()) return;
+    if (isDescricaoItem) {
+      onEditar(item.id, { nome: editNome.trim() });
+    } else {
+      if (Number(editQuantidade) <= 0) return;
+      onEditar(item.id, { nome: editNome.trim(), quantidade: Number(editQuantidade) });
+    }
     setEditando(false);
   }
 
@@ -87,15 +83,19 @@ export function ChecklistItemRow({
           <input
             value={editNome}
             onChange={(e) => setEditNome(e.target.value)}
-            className="col-span-2 rounded-lg border border-border bg-cream px-3 py-2 text-sm outline-none focus:border-pink-dark"
+            className={`rounded-lg border border-border bg-cream px-3 py-2 text-sm outline-none focus:border-pink-dark ${
+              isDescricaoItem ? "col-span-3" : "col-span-2"
+            }`}
           />
-          <input
-            type="number"
-            min={1}
-            value={editQuantidade}
-            onChange={(e) => setEditQuantidade(e.target.value)}
-            className="rounded-lg border border-border bg-cream px-3 py-2 text-sm outline-none focus:border-pink-dark"
-          />
+          {!isDescricaoItem && (
+            <input
+              type="number"
+              min={1}
+              value={editQuantidade}
+              onChange={(e) => setEditQuantidade(e.target.value)}
+              className="rounded-lg border border-border bg-cream px-3 py-2 text-sm outline-none focus:border-pink-dark"
+            />
+          )}
         </div>
         <div className="flex gap-2">
           <button
@@ -117,20 +117,10 @@ export function ChecklistItemRow({
 
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-surface">
-      <div className="flex items-center gap-1.5 px-2 py-2">
-        <button
-          onClick={() => onToggleStatus(item.id)}
-          className="flex flex-1 items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left transition-transform active:scale-[0.98]"
-        >
-          <span className="text-sm">
-            <span className="font-medium">{item.quantidade}x</span> {item.nome}
-          </span>
-          <span
-            className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${STATUS_STYLE[item.status]}`}
-          >
-            {STATUS_LABEL[item.status]}
-          </span>
-        </button>
+      <div className="flex items-center gap-1.5 px-3 py-2">
+        <p className="flex-1 text-sm">
+          {!isDescricaoItem && <span className="font-medium">{item.quantidade}x</span>} {item.nome}
+        </p>
         <button
           onClick={() => setEditando(true)}
           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted"
@@ -146,6 +136,26 @@ export function ChecklistItemRow({
           <IconTrash className="h-4 w-4" />
         </button>
       </div>
+
+      {isDescricaoItem && (
+        <div className="space-y-1.5 border-t border-border px-3 py-2.5">
+          <textarea
+            value={descricaoLocal}
+            onChange={(e) => setDescricaoLocal(e.target.value)}
+            placeholder={"Ex.: Cordão de luz flor\nGlobo de luz\nAlmofadas rosa e verde água"}
+            rows={4}
+            className="w-full rounded-lg border border-border bg-cream px-3 py-2 text-xs outline-none focus:border-pink-dark"
+          />
+          {descricaoLocal !== (item.descricao ?? "") && (
+            <button
+              onClick={() => onEditarDescricao(item.id, descricaoLocal)}
+              className="w-full rounded-lg bg-pink-dark py-1.5 text-xs font-semibold text-white"
+            >
+              Salvar
+            </button>
+          )}
+        </div>
+      )}
 
       {item.danificado ? (
         <div className="flex items-start gap-2 border-t border-border bg-pink/15 px-4 py-2.5">

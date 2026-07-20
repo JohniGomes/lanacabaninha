@@ -13,16 +13,17 @@ import {
   getEvento,
   marcarDanificado,
   removeChecklistItem,
-  toggleChecklistItem,
   updateChecklistItem,
 } from "@/lib/storage";
 import { colecoes } from "@/lib/mock-data";
 import { EstoqueItem, Evento } from "@/lib/types";
 import { formatCurrency, formatDateLong } from "@/lib/format";
+import { useRole } from "@/lib/role-context";
 
 export default function EventoDetalhePage() {
   const params = useParams<{ eventId: string }>();
   const router = useRouter();
+  const { role } = useRole();
   const [evento, setEvento] = useState<Evento | null | undefined>(undefined);
   const [estoqueItens, setEstoqueItens] = useState<EstoqueItem[]>([]);
   const [copiado, setCopiado] = useState(false);
@@ -86,12 +87,6 @@ export default function EventoDetalhePage() {
   }
 
   const colecao = evento.colecaoId ? colecoes.find((c) => c.id === evento.colecaoId) : undefined;
-  const retornados = evento.checklist.filter((i) => i.status === "retornado").length;
-
-  function handleToggleStatus(itemId: string) {
-    const atualizado = toggleChecklistItem(params.eventId, itemId);
-    if (atualizado) setEvento(atualizado);
-  }
 
   function handleMarcarDanificado(
     itemId: string,
@@ -108,8 +103,13 @@ export default function EventoDetalhePage() {
     setEstoqueItens(getEstoque());
   }
 
-  function handleEditarItem(itemId: string, dados: { nome: string; quantidade: number }) {
+  function handleEditarItem(itemId: string, dados: { nome: string; quantidade?: number }) {
     const atualizado = updateChecklistItem(params.eventId, itemId, dados);
+    if (atualizado) setEvento(atualizado);
+  }
+
+  function handleEditarDescricao(itemId: string, descricao: string) {
+    const atualizado = updateChecklistItem(params.eventId, itemId, { descricao });
     if (atualizado) setEvento(atualizado);
   }
 
@@ -124,7 +124,6 @@ export default function EventoDetalhePage() {
       id: crypto.randomUUID(),
       nome: novoItemNome.trim(),
       quantidade: Number(novoItemQuantidade),
-      status: "pendente",
     });
     if (atualizado) setEvento(atualizado);
     setNovoItemNome("");
@@ -195,6 +194,7 @@ export default function EventoDetalhePage() {
           </div>
         )}
 
+        {role === "admin" && (
         <div className="mt-3 rounded-2xl border border-border bg-surface p-4">
           {!formContratoAberto ? (
             <div className="flex items-center justify-between gap-3">
@@ -263,30 +263,25 @@ export default function EventoDetalhePage() {
             </div>
           )}
         </div>
+        )}
       </section>
 
       <section>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">Checklist</h2>
-          <span className="rounded-full bg-mint/40 px-2.5 py-0.5 text-xs font-semibold text-mint-dark">
-            {retornados}/{evento.checklist.length} retornados
-          </span>
-        </div>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">Checklist</h2>
         <div className="space-y-2">
           {evento.checklist.map((item) => (
             <ChecklistItemRow
               key={item.id}
               item={item}
               estoqueItens={estoqueItens}
-              onToggleStatus={handleToggleStatus}
               onMarcarDanificado={handleMarcarDanificado}
               onDesmarcarDanificado={handleDesmarcarDanificado}
               onEditar={handleEditarItem}
+              onEditarDescricao={handleEditarDescricao}
               onExcluir={handleExcluirItem}
             />
           ))}
         </div>
-        <p className="mt-3 text-center text-xs text-muted">Toque num item pra alternar o status</p>
 
         <div className="mt-3">
           {!formNovoItemAberto ? (

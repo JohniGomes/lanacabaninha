@@ -12,55 +12,55 @@ export const colecoes: Colecao[] = [
   { id: "fundo-do-mar", nome: "Fundo do Mar", descricao: "Sereias, estrelas-do-mar, conchas e elementos marinhos." },
 ];
 
-function item(id: string, nome: string, quantidade: number, status: ChecklistItem["status"]): ChecklistItem {
-  return { id, nome, quantidade, status };
+function item(id: string, nome: string, quantidade: number): ChecklistItem {
+  return { id, nome, quantidade };
 }
 
 const checklistArthur: ChecklistItem[] = [
-  item("a1", "Colchonetes", 10, "retornado"),
-  item("a2", "Lençóis brancos", 12, "retornado"),
-  item("a3", "Cabana amarela", 2, "retornado"),
-  item("a4", "Cabana azul royal", 2, "retornado"),
-  item("a5", "Cabana verde", 1, "retornado"),
-  item("a6", "Travesseiros amarelo", 4, "retornado"),
-  item("a7", "Travesseiros azul royal", 4, "retornado"),
-  item("a8", "Travesseiros verde", 2, "retornado"),
-  item("a9", "Cobertores amarelo", 4, "enviado"),
-  item("a10", "Cobertores azul royal", 4, "enviado"),
-  item("a11", "Cobertores verde", 2, "retornado"),
-  { ...item("a12", "Almofadas futebol", 6, "enviado"), danificado: true, observacaoDano: "Almofada rasgada durante a festa, precisa trocar o forro." },
-  item("a13", "Tapete verde escuro", 1, "retornado"),
-  item("a14", "Tapetes bola de futebol", 5, "retornado"),
-  item("a15", "Tapete campo de futebol", 1, "retornado"),
-  item("a16", "Globo de luz", 1, "retornado"),
-  item("a17", "Pisca bola grande amarela", 7, "retornado"),
+  item("a1", "Colchonetes", 10),
+  item("a2", "Lençóis brancos", 12),
+  item("a3", "Cabana amarela", 2),
+  item("a4", "Cabana azul royal", 2),
+  item("a5", "Cabana verde", 1),
+  item("a6", "Travesseiros amarelo", 4),
+  item("a7", "Travesseiros azul royal", 4),
+  item("a8", "Travesseiros verde", 2),
+  item("a9", "Cobertores amarelo", 4),
+  item("a10", "Cobertores azul royal", 4),
+  item("a11", "Cobertores verde", 2),
+  { ...item("a12", "Almofadas futebol", 6), danificado: true, observacaoDano: "Almofada rasgada durante a festa, precisa trocar o forro." },
+  item("a13", "Tapete verde escuro", 1),
+  item("a14", "Tapetes bola de futebol", 5),
+  item("a15", "Tapete campo de futebol", 1),
+  item("a16", "Globo de luz", 1),
+  item("a17", "Pisca bola grande amarela", 7),
 ];
 
 const checklistHelena: ChecklistItem[] = [
-  item("h1", "Colchonetes", 6, "pendente"),
-  item("h2", "Lençóis brancos", 8, "pendente"),
-  item("h3", "Cabana lilás", 2, "pendente"),
-  item("h4", "Cabana rosa", 1, "pendente"),
-  item("h5", "Travesseiros lilás", 3, "pendente"),
-  item("h6", "Travesseiros rosa", 3, "pendente"),
-  item("h7", "Cobertores lilás", 3, "pendente"),
-  item("h8", "Cobertores rosa", 3, "pendente"),
-  item("h9", "Almofadas nuvem", 6, "pendente"),
-  item("h10", "Tapete nuvem", 1, "pendente"),
-  item("h11", "Guirlanda de estrelas", 1, "pendente"),
-  item("h12", "Globo de luz", 1, "pendente"),
+  item("h1", "Colchonetes", 6),
+  item("h2", "Lençóis brancos", 8),
+  item("h3", "Cabana lilás", 2),
+  item("h4", "Cabana rosa", 1),
+  item("h5", "Travesseiros lilás", 3),
+  item("h6", "Travesseiros rosa", 3),
+  item("h7", "Cobertores lilás", 3),
+  item("h8", "Cobertores rosa", 3),
+  item("h9", "Almofadas nuvem", 6),
+  item("h10", "Tapete nuvem", 1),
+  item("h11", "Guirlanda de estrelas", 1),
+  item("h12", "Globo de luz", 1),
 ];
 
 const checklistMariaClara: ChecklistItem[] = [
-  item("m1", "Colchonetes", 8, "pendente"),
-  item("m2", "Lençóis brancos", 10, "pendente"),
-  item("m3", "Cabana azul", 2, "pendente"),
-  item("m4", "Cabana verde água", 2, "pendente"),
-  item("m5", "Travesseiros azul", 4, "pendente"),
-  item("m6", "Cobertores verde água", 4, "pendente"),
-  item("m7", "Almofadas concha", 5, "pendente"),
-  item("m8", "Tapete ondas", 1, "pendente"),
-  item("m9", "Guirlanda de conchinhas", 1, "pendente"),
+  item("m1", "Colchonetes", 8),
+  item("m2", "Lençóis brancos", 10),
+  item("m3", "Cabana azul", 2),
+  item("m4", "Cabana verde água", 2),
+  item("m5", "Travesseiros azul", 4),
+  item("m6", "Cobertores verde água", 4),
+  item("m7", "Almofadas concha", 5),
+  item("m8", "Tapete ondas", 1),
+  item("m9", "Guirlanda de conchinhas", 1),
 ];
 
 export const eventos: Evento[] = [
@@ -138,17 +138,4 @@ export const fornecedores: Fornecedor[] = [
   { id: "forn-foto", nome: "Bella Fotografias", categoria: "Fotografia", contato: "11 91234-0004" },
 ];
 
-export const lancamentos: LancamentoFinanceiro[] = [
-  { id: "f1", descricao: "Sinal 50% - Festa Arthur", categoria: "Reserva (sinal)", tipo: "receita", valor: 450, data: "2026-06-20", eventoId: "evt-arthur" },
-  { id: "f2", descricao: "Saldo final - Festa Arthur", categoria: "Saldo final", tipo: "receita", valor: 450, data: "2026-07-04", eventoId: "evt-arthur" },
-  { id: "f3", descricao: "Sinal 50% - Festa Helena", categoria: "Reserva (sinal)", tipo: "receita", valor: 520, data: "2026-06-28", eventoId: "evt-helena" },
-  { id: "f4", descricao: "Kit café da manhã - Festa Helena", categoria: "Opcionais", tipo: "receita", valor: 136, data: "2026-06-30", eventoId: "evt-helena" },
-  { id: "f5", descricao: "Sinal 50% - Festa Maria Clara", categoria: "Reserva (sinal)", tipo: "receita", valor: 480, data: "2026-07-05", eventoId: "evt-maria-clara" },
-  { id: "f6", descricao: "Lavanderia enxoval", categoria: "Enxoval / Lavanderia", tipo: "despesa", valor: 120, data: "2026-07-05" },
-  { id: "f7", descricao: "Compra de almofadas tema Fundo do Mar", categoria: "Compra de itens", tipo: "despesa", valor: 210, data: "2026-07-02" },
-  { id: "f8", descricao: "Combustível - montagem/desmontagem", categoria: "Transporte / Frete", tipo: "despesa", valor: 90, data: "2026-07-04" },
-  { id: "f9", descricao: "Impulsionamento Instagram", categoria: "Marketing", tipo: "despesa", valor: 60, data: "2026-07-01" },
-  { id: "f10", descricao: "Reposição de pisca-pisca queimado", categoria: "Manutenção", tipo: "despesa", valor: 45, data: "2026-06-29" },
-  { id: "f11", descricao: "Spa da Helena", categoria: "Spa", tipo: "despesa", valor: 90, data: "2026-07-11", eventoId: "evt-helena", fornecedorId: "forn-spa" },
-  { id: "f12", descricao: "Fotos da festa da Maria Clara", categoria: "Fotografia", tipo: "despesa", valor: 150, data: "2026-07-18", eventoId: "evt-maria-clara", fornecedorId: "forn-foto" },
-];
+export const lancamentos: LancamentoFinanceiro[] = [];

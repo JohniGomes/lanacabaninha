@@ -1,9 +1,10 @@
 import { eventos as eventosMock, fornecedores as fornecedoresMock, lancamentos as lancamentosMock } from "./mock-data";
 import { estoqueInicial } from "./estoque-data";
-import { ChecklistItem, EstoqueItem, Evento, Fornecedor, LancamentoFinanceiro, Role, StatusItem } from "./types";
+import { ChecklistItem, EstoqueItem, Evento, Fornecedor, LancamentoFinanceiro, Role } from "./types";
 
 const EVENTOS_KEY = "lnc_eventos";
 const LANCAMENTOS_KEY = "lnc_lancamentos";
+const LANCAMENTOS_RESET_FLAG = "lnc_lancamentos_reset_ficticios_v1";
 const FORNECEDORES_KEY = "lnc_fornecedores";
 const ESTOQUE_KEY = "lnc_estoque";
 const ROLE_KEY = "lnc_role";
@@ -38,28 +39,6 @@ export function getEvento(id: string): Evento | undefined {
 export function addEvento(evento: Evento) {
   const eventos = getEventos();
   saveEventos([...eventos, evento]);
-}
-
-const STATUS_CYCLE: StatusItem[] = ["pendente", "enviado", "retornado"];
-
-export function nextStatus(status: StatusItem): StatusItem {
-  const idx = STATUS_CYCLE.indexOf(status);
-  return STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
-}
-
-export function toggleChecklistItem(eventoId: string, itemId: string) {
-  const eventos = getEventos();
-  const updated = eventos.map((evento) => {
-    if (evento.id !== eventoId) return evento;
-    return {
-      ...evento,
-      checklist: evento.checklist.map((item) =>
-        item.id === itemId ? { ...item, status: nextStatus(item.status) } : item
-      ),
-    };
-  });
-  saveEventos(updated);
-  return updated.find((e) => e.id === eventoId);
 }
 
 export function aceitarContrato(eventoId: string, dados: { nome: string; cpf: string; rg: string }) {
@@ -190,7 +169,7 @@ export function addChecklistItem(eventoId: string, item: ChecklistItem) {
 export function updateChecklistItem(
   eventoId: string,
   itemId: string,
-  dados: { nome: string; quantidade: number }
+  dados: Partial<Pick<ChecklistItem, "nome" | "quantidade" | "descricao">>
 ) {
   const eventos = getEventos();
   const updated = eventos.map((evento) => {
@@ -219,6 +198,10 @@ export function removeChecklistItem(eventoId: string, itemId: string) {
 
 export function getLancamentos(): LancamentoFinanceiro[] {
   if (!isBrowser()) return lancamentosMock;
+  if (!window.localStorage.getItem(LANCAMENTOS_RESET_FLAG)) {
+    window.localStorage.removeItem(LANCAMENTOS_KEY);
+    window.localStorage.setItem(LANCAMENTOS_RESET_FLAG, "1");
+  }
   const raw = window.localStorage.getItem(LANCAMENTOS_KEY);
   if (!raw) {
     window.localStorage.setItem(LANCAMENTOS_KEY, JSON.stringify(lancamentosMock));

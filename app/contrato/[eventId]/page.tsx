@@ -51,7 +51,14 @@ export default function ContratoPage() {
   return (
     <div className="flex flex-1 flex-col px-6 py-8">
       <div className="mx-auto w-full max-w-sm">
-        <div className="mb-6 flex flex-col items-center text-center">
+        <button
+          onClick={() => router.push("/")}
+          className="flex items-center gap-1 text-sm font-medium text-muted"
+        >
+          <IconArrowLeft className="h-4 w-4" /> Voltar
+        </button>
+
+        <div className="mb-6 mt-4 flex flex-col items-center text-center">
           <Image src={logo} alt="Lá Na Cabaninha" width={140} height={124} priority />
           <p className="mt-1 text-sm text-muted">Contrato de prestação de serviços — festa da(o) {evento.aniversariante}</p>
         </div>
@@ -71,24 +78,15 @@ export default function ContratoPage() {
             </p>
           </div>
         ) : !termosCompletos ? (
-          <div className="space-y-3">
-            <div className="rounded-2xl border border-border bg-surface p-4 text-center">
-              <IconClock className="mx-auto h-8 w-8 text-muted" />
-              <p className="mt-2 text-sm font-semibold text-foreground">
-                Aguardando confirmação de valores
-              </p>
-              <p className="mt-1 text-xs text-muted">
-                Nossa equipe está finalizando os detalhes da sua festa. Assim que o valor e a
-                forma de pagamento forem confirmados, o contrato completo aparece aqui neste
-                mesmo link.
-              </p>
-            </div>
-            <button
-              onClick={() => router.push("/")}
-              className="flex w-full items-center justify-center gap-1.5 rounded-2xl border border-border bg-surface px-5 py-3 text-sm font-semibold text-foreground"
-            >
-              <IconArrowLeft className="h-4 w-4" /> Voltar
-            </button>
+          <div className="rounded-2xl border border-border bg-surface p-4 text-center">
+            <IconClock className="mx-auto h-8 w-8 text-muted" />
+            <p className="mt-2 text-sm font-semibold text-foreground">
+              Aguardando confirmação de valores
+            </p>
+            <p className="mt-1 text-xs text-muted">
+              Nossa equipe está finalizando os detalhes da sua festa. Assim que o valor e a forma
+              de pagamento forem confirmados, o contrato completo aparece aqui neste mesmo link.
+            </p>
           </div>
         ) : (
           <>

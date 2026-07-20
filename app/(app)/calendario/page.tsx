@@ -5,17 +5,8 @@ import { EventCard } from "@/components/EventCard";
 import { IconLink } from "@/components/Icons";
 import { addEvento, getEventos } from "@/lib/storage";
 import { colecoes } from "@/lib/mock-data";
-import { CaminhoFesta, ChecklistItem, Evento } from "@/lib/types";
-
-function checklistInicial(): ChecklistItem[] {
-  return [
-    { id: crypto.randomUUID(), nome: "Colchonetes", quantidade: 1, status: "pendente" },
-    { id: crypto.randomUUID(), nome: "Lençóis brancos", quantidade: 1, status: "pendente" },
-    { id: crypto.randomUUID(), nome: "Cabanas", quantidade: 1, status: "pendente" },
-    { id: crypto.randomUUID(), nome: "Travesseiros e cobertores", quantidade: 1, status: "pendente" },
-    { id: crypto.randomUUID(), nome: "Decoração temática", quantidade: 1, status: "pendente" },
-  ];
-}
+import { checklistInicial } from "@/lib/checklist-template";
+import { CaminhoFesta, Evento } from "@/lib/types";
 
 const INITIAL_FORM = {
   aniversariante: "",

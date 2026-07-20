@@ -1,12 +1,10 @@
 export type Role = "admin" | "colaborador";
 
-export type StatusItem = "pendente" | "enviado" | "retornado";
-
 export interface ChecklistItem {
   id: string;
   nome: string;
-  quantidade: number;
-  status: StatusItem;
+  quantidade?: number;
+  descricao?: string;
   danificado?: boolean;
   observacaoDano?: string;
   estoqueItemId?: string;
