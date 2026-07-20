@@ -64,6 +64,9 @@ export default function FinanceiroPage() {
   const [pagamentoValor, setPagamentoValor] = useState("");
   const [pagamentoData, setPagamentoData] = useState(HOJE);
 
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(false);
+
   useEffect(() => {
     if (ready && role && role !== "admin") {
       router.replace("/dashboard");
@@ -71,8 +74,13 @@ export default function FinanceiroPage() {
   }, [ready, role, router]);
 
   useEffect(() => {
-    setLancamentos(getLancamentos());
-    setFornecedores(getFornecedores());
+    Promise.all([getLancamentos(), getFornecedores()])
+      .then(([l, f]) => {
+        setLancamentos(l);
+        setFornecedores(f);
+      })
+      .catch(() => setErro(true))
+      .finally(() => setCarregando(false));
   }, []);
 
   const ordenados = useMemo(
@@ -106,15 +114,23 @@ export default function FinanceiroPage() {
       });
   }, [lancamentos]);
 
-  if (!ready || role !== "admin") {
+  if (!ready || role !== "admin" || carregando) {
     return <p className="text-sm text-muted">Carregando...</p>;
+  }
+
+  if (erro) {
+    return (
+      <p className="rounded-xl border border-pink-dark/30 bg-pink/20 px-4 py-3 text-sm text-pink-dark">
+        Não consegui falar com a planilha agora. Confira sua internet e tente de novo.
+      </p>
+    );
   }
 
   function podeSalvar() {
     return descricao.trim() && categoria.trim() && data && Number(valor) > 0;
   }
 
-  function handleSalvar() {
+  async function handleSalvar() {
     if (!podeSalvar()) return;
     const novo: LancamentoFinanceiro = {
       id: `lanc-${Date.now()}`,
@@ -124,48 +140,60 @@ export default function FinanceiroPage() {
       valor: Number(valor),
       data,
     };
-    addLancamento(novo);
-    setLancamentos(getLancamentos());
-    setDescricao("");
-    setCategoria("");
-    setValor("");
-    setData(HOJE);
-    setTipo("receita");
-    setFormAberto(false);
+    try {
+      await addLancamento(novo);
+      setLancamentos(await getLancamentos());
+      setDescricao("");
+      setCategoria("");
+      setValor("");
+      setData(HOJE);
+      setTipo("receita");
+      setFormAberto(false);
+    } catch {
+      setErro(true);
+    }
   }
 
   function podeSalvarFornecedor() {
     return novoFornecedorNome.trim() && novoFornecedorCategoria.trim();
   }
 
-  function salvarFornecedor() {
+  async function salvarFornecedor() {
     if (!podeSalvarFornecedor()) return;
-    addFornecedor({
-      id: `forn-${Date.now()}`,
-      nome: novoFornecedorNome.trim(),
-      categoria: novoFornecedorCategoria.trim(),
-    });
-    setFornecedores(getFornecedores());
-    setNovoFornecedorNome("");
-    setNovoFornecedorCategoria("");
-    setFornecedorFormAberto(false);
+    try {
+      await addFornecedor({
+        id: `forn-${Date.now()}`,
+        nome: novoFornecedorNome.trim(),
+        categoria: novoFornecedorCategoria.trim(),
+      });
+      setFornecedores(await getFornecedores());
+      setNovoFornecedorNome("");
+      setNovoFornecedorCategoria("");
+      setFornecedorFormAberto(false);
+    } catch {
+      setErro(true);
+    }
   }
 
-  function registrarPagamento(fornecedor: Fornecedor) {
+  async function registrarPagamento(fornecedor: Fornecedor) {
     if (!pagamentoValor || Number(pagamentoValor) <= 0) return;
-    addLancamento({
-      id: `lanc-${Date.now()}`,
-      descricao: `Pagamento - ${fornecedor.nome}`,
-      categoria: fornecedor.categoria,
-      tipo: "despesa",
-      valor: Number(pagamentoValor),
-      data: pagamentoData,
-      fornecedorId: fornecedor.id,
-    });
-    setLancamentos(getLancamentos());
-    setPagamentoFornecedorId(null);
-    setPagamentoValor("");
-    setPagamentoData(HOJE);
+    try {
+      await addLancamento({
+        id: `lanc-${Date.now()}`,
+        descricao: `Pagamento - ${fornecedor.nome}`,
+        categoria: fornecedor.categoria,
+        tipo: "despesa",
+        valor: Number(pagamentoValor),
+        data: pagamentoData,
+        fornecedorId: fornecedor.id,
+      });
+      setLancamentos(await getLancamentos());
+      setPagamentoFornecedorId(null);
+      setPagamentoValor("");
+      setPagamentoData(HOJE);
+    } catch {
+      setErro(true);
+    }
   }
 
   return (

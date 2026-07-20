@@ -17,29 +17,57 @@ export default function ContratoPage() {
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
   const [rg, setRg] = useState("");
+  const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState(false);
 
   useEffect(() => {
-    const e = getEvento(params.eventId) ?? null;
-    setEvento(e);
-    if (e) {
-      setNome(e.contatoNome ?? "");
-      setCpf(e.cpfContratante ?? "");
-      setRg(e.rgContratante ?? "");
-    }
+    getEvento(params.eventId)
+      .then((e) => {
+        setEvento(e ?? null);
+        if (e) {
+          setNome(e.contatoNome ?? "");
+          setCpf(e.cpfContratante ?? "");
+          setRg(e.rgContratante ?? "");
+        }
+      })
+      .catch(() => setErro(true));
   }, [params.eventId]);
 
-  function handleConfirmar() {
+  async function handleConfirmar() {
     if (!nome.trim() || !cpf.trim() || !rg.trim()) return;
-    const atualizado = aceitarContrato(params.eventId, {
-      nome: nome.trim(),
-      cpf: cpf.trim(),
-      rg: rg.trim(),
-    });
-    if (atualizado) setEvento(atualizado);
+    setEnviando(true);
+    try {
+      const dados = { nome: nome.trim(), cpf: cpf.trim(), rg: rg.trim() };
+      await aceitarContrato(params.eventId, dados);
+      setEvento((atual) =>
+        atual
+          ? {
+              ...atual,
+              contatoNome: dados.nome,
+              cpfContratante: dados.cpf,
+              rgContratante: dados.rg,
+              contratoAceito: true,
+              contratoAceitoEm: new Date().toISOString(),
+            }
+          : atual
+      );
+    } catch {
+      setErro(true);
+    } finally {
+      setEnviando(false);
+    }
   }
 
   if (evento === undefined) {
     return <p className="p-6 text-sm text-muted">Carregando...</p>;
+  }
+
+  if (erro && evento === null) {
+    return (
+      <p className="p-6 text-sm text-pink-dark">
+        Não consegui falar com a planilha agora. Confira sua internet e tente de novo.
+      </p>
+    );
   }
 
   if (evento === null) {
@@ -217,12 +245,18 @@ export default function ContratoPage() {
               <span className="text-muted">Li e aceito o contrato acima.</span>
             </label>
 
+            {erro && (
+              <p className="mt-3 text-xs font-medium text-pink-dark">
+                Não consegui confirmar agora. Confira sua internet e tente de novo.
+              </p>
+            )}
+
             <button
               onClick={handleConfirmar}
-              disabled={!aceite || !nome.trim() || !cpf.trim() || !rg.trim()}
+              disabled={!aceite || !nome.trim() || !cpf.trim() || !rg.trim() || enviando}
               className="mt-4 w-full rounded-2xl bg-pink-dark px-5 py-3 text-sm font-semibold text-white disabled:opacity-40"
             >
-              Confirmar aceite
+              {enviando ? "Enviando..." : "Confirmar aceite"}
             </button>
           </>
         )}

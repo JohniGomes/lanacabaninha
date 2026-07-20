@@ -1,0 +1,223 @@
+id	categoria	nome	quantidade	nota
+est-cabanas-amarela	Cabanas	Amarela	3	
+est-cabanas-azul-claro	Cabanas	Azul Claro	9	
+est-cabanas-azul-marinho	Cabanas	Azul Marinho	1	
+est-cabanas-azul-tiffany-poa	Cabanas	Azul Tiffany Poá	4	
+est-cabanas-bege-com-verde-musgo-e-animais	Cabanas	Bege Com Verde Musgo E Animais	1	
+est-cabanas-bege-tecido	Cabanas	Bege Tecido	18	
+est-cabanas-branca-cetim-floral	Cabanas	Branca Cetim Floral	3	
+est-cabanas-branca-lisa	Cabanas	Branca Lisa	2	
+est-cabanas-branca-poa	Cabanas	Branca Poá	4	
+est-cabanas-camuflada-tactel	Cabanas	Camuflada Tactel	8	
+est-cabanas-camuflada-tecido	Cabanas	Camuflada Tecido	6	
+est-cabanas-chevron-azul-marinho-branco	Cabanas	Chevron Azul Marinho/Branco	2	
+est-cabanas-chevron-azul-azul-bebe	Cabanas	Chevron Azul/Azul Bebê	1	
+est-cabanas-chevron-branca-rose	Cabanas	Chevron Branca/Rosê	1	
+est-cabanas-chevron-branca-verde	Cabanas	Chevron Branca/Verde	1	
+est-cabanas-chevron-c-poa-azul-bebe	Cabanas	Chevron C/ Poá Azul Bebê	1	
+est-cabanas-chevron-laranja-cinza-verde-branca	Cabanas	Chevron Laranja/Cinza/Verde/Branca	1	
+est-cabanas-cinza-poa	Cabanas	Cinza Poá	3	
+est-cabanas-floral-azul-rosa	Cabanas	Floral Azul/Rosa	2	
+est-cabanas-jeans	Cabanas	Jeans	8	
+est-cabanas-laranja-neon	Cabanas	Laranja Neon	2	
+est-cabanas-lilas-clara	Cabanas	Lilás Clara	4	
+est-cabanas-lilas-escura	Cabanas	Lilás Escura	3	
+est-cabanas-lilas-media	Cabanas	Lilás Média	2	
+est-cabanas-lilas-poa	Cabanas	Lilás Poá	2	
+est-cabanas-poa-vermelho	Cabanas	Poá Vermelho	1	
+est-cabanas-preta	Cabanas	Preta	4	
+est-cabanas-renda-bege	Cabanas	Renda Bege	1	
+est-cabanas-rosa-claro	Cabanas	Rosa Claro	9	
+est-cabanas-rosa-claro-chevron-com-poa	Cabanas	Rosa Claro Chevron Com Poá	6	
+est-cabanas-rosa-claro-com-nuvens-brancas	Cabanas	Rosa Claro Com Nuvens Brancas	3	
+est-cabanas-rosa-escuro-pink	Cabanas	Rosa Escuro (Pink)	4	
+est-cabanas-rosa-escuro-com-nuvens-brancas	Cabanas	Rosa Escuro Com Nuvens Brancas	2	
+est-cabanas-rosa-neon	Cabanas	Rosa Neon	3	
+est-cabanas-rose-cetim-floral	Cabanas	Rosê Cetim Floral	2	
+est-cabanas-roxa	Cabanas	Roxa	3	
+est-cabanas-roxa-poa	Cabanas	Roxa Poá	2	
+est-cabanas-salmao-com-nuvens-brancas	Cabanas	Salmão Com Nuvens Brancas	2	
+est-cabanas-snoopy	Cabanas	Snoopy	2	
+est-cabanas-triangulos-cinza-rosa-branco	Cabanas	Triangulos Cinza/Rosa/Branco	2	
+est-cabanas-verde	Cabanas	Verde	1	
+est-cabanas-verde-agua	Cabanas	Verde Agua	6	
+est-cabanas-verde-musgo-camuflata-tecido	Cabanas	Verde Musgo/Camuflata Tecido	3	
+est-cabanas-verde-neon	Cabanas	Verde Neon	3	
+est-cabanas-vermelha	Cabanas	Vermelha	4	
+est-tendas-armacao-armacao-tenda-grde	Tendas — Armação	Armação Tenda Grde	2	
+est-tendas-armacao-armacao-tenda-pq	Tendas — Armação	Armação Tenda Pq	1	
+est-tendas-armacao-pecas-tenda-gde	Tendas — Armação	Peças Tenda Gde	2	2 KIT OK
+est-tendas-armacao-canos-com-areia-pro-tecido	Tendas — Armação	Canos Com Areia Pro Tecido	2	
+est-tendas-tecidos-branco-de-amarrar	Tendas — Tecidos	Branco De Amarrar	1	
+est-tendas-tecidos-roxo-de-elanca	Tendas — Tecidos	Roxo De Elanca	1	
+est-tendas-tecidos-azul-de-elanca	Tendas — Tecidos	Azul De Elanca	1	
+est-tendas-tecidos-branco-de-veu	Tendas — Tecidos	Branco De Véu	1	
+est-tendas-tecidos-roxo-de-veu	Tendas — Tecidos	Roxo De Véu	1	
+est-tendas-tecidos-rosa-de-veu	Tendas — Tecidos	Rosa De Véu	1	
+est-travesseiros-travesseiros-unidades	Travesseiros	Travesseiros (Unidades)	87	
+est-fronhas-cetim-rose	Fronhas	Cetim Rosê	14	
+est-fronhas-olhinho	Fronhas	Olhinho	22	
+est-fronhas-cetim-pink	Fronhas	Cetim Pink	5	
+est-fronhas-verde-agua	Fronhas	Verde Agua	16	
+est-fronhas-verde-abacate	Fronhas	Verde Abacate	4	
+est-fronhas-verde-musgo	Fronhas	Verde Musgo	4	
+est-fronhas-verde-claro	Fronhas	Verde Claro	14	
+est-fronhas-azul-marinho	Fronhas	Azul Marinho	2	
+est-fronhas-azul-petroleo	Fronhas	Azul Petróleo	8	
+est-fronhas-azul-bebe	Fronhas	Azul Bebê	13	
+est-fronhas-azul-cetim	Fronhas	Azul Cetim	10	
+est-fronhas-vermelho	Fronhas	Vermelho	12	
+est-fronhas-lilas-escuro	Fronhas	Lilás Escuro	17	
+est-fronhas-lilas-claro	Fronhas	Lilás Claro	8	
+est-fronhas-lilas-cetim	Fronhas	Lilás Cetim	10	
+est-fronhas-rosa-claro	Fronhas	Rosa Claro	12	
+est-fronhas-pink	Fronhas	Pink	28	
+est-fronhas-rosa-chiclete	Fronhas	Rosa Chiclete	12	
+est-fronhas-rosa-poa	Fronhas	Rosa Poá	10	
+est-fronhas-preto	Fronhas	Preto	14	
+est-fronhas-amarelo	Fronhas	Amarelo	8	
+est-fronhas-branco	Fronhas	Branco	32	
+est-fronhas-laranja	Fronhas	Laranja	1	
+est-fronhas-estampado	Fronhas	Estampado	1	
+est-cobertores-casal-off-white	Cobertores Casal	Off White	19	
+est-cobertores-solteiro-bege	Cobertores Solteiro	Bege	7	
+est-cobertores-casal-marrom	Cobertores Casal	Marrom	15	
+est-cobertores-solteiro-preto	Cobertores Solteiro	Preto	3	
+est-cobertores-casal-branco	Cobertores Casal	Branco	1	
+est-cobertores-solteiro-vermelho	Cobertores Solteiro	Vermelho	14	
+est-cobertores-casal-cinza	Cobertores Casal	Cinza	2	
+est-cobertores-solteiro-verde-abacate	Cobertores Solteiro	Verde Abacate	10	
+est-cobertores-casal-rosa-que-brlha	Cobertores Casal	Rosa Que Brlha	2	
+est-cobertores-solteiro-amarelo	Cobertores Solteiro	Amarelo	10	
+est-cobertores-casal-preto	Cobertores Casal	Preto	6	
+est-cobertores-solteiro-azul-royal	Cobertores Solteiro	Azul Royal	7	
+est-cobertores-casal-vermelho	Cobertores Casal	Vermelho	3	
+est-cobertores-solteiro-azul-marinho	Cobertores Solteiro	Azul Marinho	7	
+est-cobertores-casal-verde-agua-novo	Cobertores Casal	Verde Agua Novo	2	
+est-cobertores-solteiro-azul-bebe	Cobertores Solteiro	Azul Bebe	4	
+est-cobertores-casal-verde-agua	Cobertores Casal	Verde Agua	9	
+est-cobertores-solteiro-roxo-mini	Cobertores Solteiro	Roxo Mini	6	
+est-cobertores-casal-azul-tiffany	Cobertores Casal	Azul Tiffany	9	
+est-cobertores-solteiro-borboleta-mini	Cobertores Solteiro	Borboleta Mini	3	
+est-cobertores-casal-azul-claro	Cobertores Casal	Azul Claro	2	
+est-cobertores-solteiro-rosa-bebe	Cobertores Solteiro	Rosa Bebe	12	
+est-cobertores-casal-rosa-lilas	Cobertores Casal	Rosa / Lilás	8	
+est-cobertores-solteiro-pink	Cobertores Solteiro	Pink	13	
+est-cobertores-casal-lilas-claro	Cobertores Casal	Lilás Claro	4	
+est-cobertores-casal-roxo-azulado	Cobertores Casal	Roxo Azulado	2	
+est-cobertores-casal-lilas-com-pompom	Cobertores Casal	Lilás Com Pompom	1	
+est-cobertores-casal-rose	Cobertores Casal	Rosê	5	
+est-cobertores-casal-pink	Cobertores Casal	Pink	18	
+est-cobertores-casal-vinho	Cobertores Casal	Vinho	6	
+est-cobertores-casal-roxo-liso	Cobertores Casal	Roxo Liso	3	
+est-cobertores-casal-roxo-felpudo	Cobertores Casal	Roxo Felpudo	4	
+est-cobertores-casal-roxo-vinho	Cobertores Casal	Roxo / Vinho	5	
+est-almofadas-stitch-quadrada	Almofadas	Stitch Quadrada	13	
+est-almofadas-stitch-formato-gde	Almofadas	Stitch Formato Gde	3	
+est-almofadas-stitch-formato-pq	Almofadas	Stitch Formato Pq	8	
+est-almofadas-rosa	Almofadas	Rosa	7	
+est-almofadas-rosa-pelucia	Almofadas	Rosa Pelúcia	1	
+est-almofadas-rosa-cetim	Almofadas	Rosa Cetim	4	
+est-almofadas-amarelo-neon	Almofadas	Amarelo Neon	2	
+est-almofadas-laranja-neon	Almofadas	Laranja Neon	4	
+est-almofadas-rosa-neon	Almofadas	Rosa Neon	7	
+est-almofadas-vermelha	Almofadas	Vermelha	3	
+est-almofadas-azul-royal	Almofadas	Azul Royal	3	
+est-almofadas-verde	Almofadas	Verde	3	
+est-almofadas-roxa	Almofadas	Roxa	2	
+est-almofadas-bege-de-pelo	Almofadas	Bege De Pelo	4	
+est-almofadas-verde-rosa-lantejoula	Almofadas	Verde/Rosa Lantejoula	5	
+est-almofadas-azul-marinho	Almofadas	Azul Marinho	4	
+est-almofadas-verde-agua	Almofadas	Verde Agua	2	
+est-almofadas-lilas	Almofadas	Lilás	1	
+est-almofadas-camuflada	Almofadas	Camuflada	14	
+est-almofadas-jeans	Almofadas	Jeans	14	
+est-almofadas-planetas-fundo-preto	Almofadas	Planetas Fundo Preto	5	
+est-almofadas-minions-amarela	Almofadas	Minions Amarela	2	
+est-almofadas-no-rose	Almofadas	Nó Rosê	3	
+est-almofadas-palmeiras	Almofadas	Palmeiras	1	
+est-almofadas-mini-colchonetes	Almofadas	Mini Colchonetes	17	
+est-almofadas-rose-pelinhos	Almofadas	Rosê Pelinhos	1	
+est-almofadas-lua-estrela-nuvem-branca-pelucia	Almofadas	Lua / Estrela /  Nuvem Branca Pelúcia	3	
+est-almofadas-harry-potter-mini-amarela-marrom-vermelha-azul	Almofadas	Harry Potter Mini Amarela / Marrom / Vermelha / Azul	4	
+est-almofadas-coruja-mini	Almofadas	Coruja Mini	4	
+est-almofadas-panda-mini	Almofadas	Panda Mini	4	
+est-almofadas-divertidamente-mini	Almofadas	Divertidamente Mini	2	
+est-almofadas-pascoa-mini	Almofadas	Páscoa Mini	2	
+est-almofadas-formato-de-unicornio	Almofadas	Formato De Unicórnio	4	
+est-almofadas-formato-de-coruja	Almofadas	Formato De Coruja	1	
+est-almofadas-formato-de-coracao-verde	Almofadas	Formato De Coração Verde	5	
+est-almofadas-formato-de-coracao-azul	Almofadas	Formato De Coração Azul	3	
+est-almofadas-formato-de-coracao-lilas	Almofadas	Formato De Coração Lilás	8	
+est-almofadas-formato-de-coracao-amarelo	Almofadas	Formato De Coração Amarelo	2	
+est-almofadas-formato-de-coracao-pink	Almofadas	Formato De Coração Pink	3	
+est-almofadas-formato-de-coracao-rosa-bebe	Almofadas	Formato De Coração Rosa Bebê	3	
+est-almofadas-formato-de-coracao-rosa-escuro	Almofadas	Formato De Coração Rosa Escuro	5	
+est-lencois-branco-elastico	Lençóis	Branco Elástico	54	
+est-lencois-branco	Lençóis	Branco	44	
+est-lencois-rosa-claro	Lençóis	Rosa Claro	8	
+est-lencois-jeans	Lençóis	Jeans	7	
+est-lencois-pink	Lençóis	Pink	3	
+est-lencois-roxo	Lençóis	Roxo	3	
+est-lencois-lilas	Lençóis	Lilás	3	
+est-iluminacao-flor-branca	Iluminação	Flor Branca	10	
+est-iluminacao-flor-branca-e-rosa	Iluminação	Flor Branca E Rosa	6	
+est-iluminacao-bola-grande-colorida	Iluminação	Bola Grande Colorida	11	
+est-iluminacao-bola-grande-amarela-de-pilha	Iluminação	Bola Grande Amarela De Pilha	12	
+est-iluminacao-bola-grande-amarela-de-tomada	Iluminação	Bola Grande Amarela De Tomada	4	
+est-iluminacao-bolinha-pq-branca	Iluminação	Bolinha Pq Branca	13	
+est-iluminacao-bolinha-pq-transparente	Iluminação	Bolinha Pq Transparente	5	
+est-iluminacao-pregador	Iluminação	Pregador	4	
+est-iluminacao-estrela	Iluminação	Estrela	4	
+est-iluminacao-lampada-pontuda-branca-c-fio-preto-colorida	Iluminação	Lampada Pontuda Branca C/ Fio Preto Colorida	2	
+est-iluminacao-bola-linha-azul	Iluminação	Bola Linha Azul	8	
+est-iluminacao-bola-linha-branca-e-rosa	Iluminação	Bola Linha Branca E Rosa	2	
+est-iluminacao-rola-linha-rosa	Iluminação	Rola Linha Rosa	1	
+est-iluminacao-bola-linha-branca	Iluminação	Bola Linha Branca	1	
+est-iluminacao-bola-pq-colorida	Iluminação	Bola Pq Colorida	1	
+est-iluminacao-bola-pq-preta	Iluminação	Bola Pq Preta	3	
+est-iluminacao-coracoes-rosa-branco-pilha	Iluminação	Corações Rosa/Branco Pilha	2	
+est-iluminacao-coracoes-vermelho-tomada	Iluminação	Corações Vermelho Tomada	1	
+est-iluminacao-lanterna-japonesa-verde	Iluminação	Lanterna Japonesa Verde	1	
+est-iluminacao-lanterna-japonesa-branca	Iluminação	Lanterna Japonesa Branca	2	
+est-iluminacao-lanterna-japonesa-rosa	Iluminação	Lanterna Japonesa Rosa	1	
+est-iluminacao-cup-cake	Iluminação	Cup Cake	2	
+est-iluminacao-flamingo	Iluminação	Flamingo	3	
+est-iluminacao-panda	Iluminação	Panda	1	
+est-iluminacao-flores	Iluminação	Flores	1	
+est-iluminacao-letras	Iluminação	Letras	1	
+est-iluminacao-fio-de-luz-de-tomada-rosa	Iluminação	Fio De Luz De Tomada Rosa	5	
+est-iluminacao-fio-de-luz-de-tomada-verde	Iluminação	Fio De Luz De Tomada Verde	1	
+est-iluminacao-fio-de-luz-de-tomada-amarelo	Iluminação	Fio De Luz De Tomada Amarelo	11	
+est-iluminacao-fio-de-luz-de-tomada-azul	Iluminação	Fio De Luz De Tomada Azul	2	
+est-iluminacao-fio-de-luz-de-tomada-verde-e-rosa	Iluminação	Fio De Luz De Tomada Verde E Rosa	1	
+est-iluminacao-fio-de-luz-de-tomada-lilas	Iluminação	Fio De Luz De Tomada Lilás	2	
+est-iluminacao-fio-de-luz-de-tomada-vermelho-e-amarelo	Iluminação	Fio De Luz De Tomada Vermelho E Amarelo	1	
+est-tapetes-verde-agua-gde	Tapetes	Verde Agua Gde	2	
+est-tapetes-rosa-gde	Tapetes	Rosa Gde	5	
+est-tapetes-lilas-gde	Tapetes	Lilás Gde	2	
+est-tapetes-branco-gde	Tapetes	Branco Gde	3	
+est-tapetes-tye-dye-medio	Tapetes	Tye Dye Médio	2	
+est-tapetes-azul-bebe	Tapetes	Azul Bebe	2	
+est-tapetes-bege	Tapetes	Bege	2	
+est-tapetes-roxo-branco	Tapetes	Roxo / Branco	1	
+est-tapetes-tigre	Tapetes	Tigre	1	
+est-tapetes-capivara	Tapetes	Capivara	1	
+est-tapetes-tye-dye-pq	Tapetes	Tye Dye Pq	2	
+est-tapetes-coracao-rosa-pq	Tapetes	Coração Rosa Pq	1	
+est-tapetes-borboleta	Tapetes	Borboleta	1	
+est-tapetes-meia-bola-fut-pq	Tapetes	Meia Bola Fut Pq	8	
+est-tapetes-campo-fut-pq	Tapetes	Campo Fut Pq	1	
+est-colchonetes-preto	Colchonetes	Preto	63	
+est-colchonetes-branco	Colchonetes	Branco	19	
+est-colchonetes-azul	Colchonetes	Azul	8	
+est-colchonetes-sem-capa	Colchonetes	Sem Capa	2	
+est-extensoes-comprida-3-entradas	Extensões	Comprida 3 Entradas	1	
+est-extensoes-media-3-entradas	Extensões	Média 3 Entradas	3	
+est-extensoes-comprida-1-entrada	Extensões	Comprida 1 Entrada	1	
+est-extensoes-media-1-entreda	Extensões	Média 1 Entreda	1	
+est-bandejas-com-pezinho	Bandejas	Com Pézinho	11	
+est-bandejas-sem-pezinho	Bandejas	Sem Pézinho	5	
+est-caixas-rosa-pq	Caixas	Rosa Pq	5	
+est-caixas-verde-pq	Caixas	Verde Pq	1	
+est-caixas-rosa-gde	Caixas	Rosa Gde	1	

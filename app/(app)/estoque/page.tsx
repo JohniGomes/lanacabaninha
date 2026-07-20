@@ -24,9 +24,17 @@ export default function EstoquePage() {
   const [novoNome, setNovoNome] = useState("");
   const [novaQuantidade, setNovaQuantidade] = useState("1");
 
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(false);
+
   useEffect(() => {
-    setItens(getEstoque());
-    setEventos(getEventos());
+    Promise.all([getEstoque(), getEventos()])
+      .then(([estoqueData, eventosData]) => {
+        setItens(estoqueData);
+        setEventos(eventosData);
+      })
+      .catch(() => setErro(true))
+      .finally(() => setCarregando(false));
   }, []);
 
   const itensDanificados = useMemo(
@@ -39,9 +47,14 @@ export default function EstoquePage() {
     [eventos]
   );
 
-  function resolverDano(eventoId: string, itemId: string) {
-    desmarcarDanificado(eventoId, itemId);
-    setEventos(getEventos());
+  async function resolverDano(eventoId: string, itemId: string) {
+    try {
+      await desmarcarDanificado(eventoId, itemId);
+      setEventos(await getEventos());
+      setItens(await getEstoque());
+    } catch {
+      setErro(true);
+    }
   }
 
   const categorias = useMemo(
@@ -72,42 +85,58 @@ export default function EstoquePage() {
     });
   }
 
-  function alterarQuantidade(id: string, delta: number) {
+  async function alterarQuantidade(id: string, delta: number) {
     const atual = itens.find((i) => i.id === id);
     if (!atual) return;
     const nova = Math.max(0, atual.quantidade + delta);
-    updateEstoqueItem(id, nova);
-    setItens(getEstoque());
+    try {
+      await updateEstoqueItem(id, nova);
+      setItens(await getEstoque());
+    } catch {
+      setErro(true);
+    }
   }
 
-  function excluirItem(id: string, nome: string) {
+  async function excluirItem(id: string, nome: string) {
     if (!window.confirm(`Excluir "${nome}" do estoque?`)) return;
-    deleteEstoqueItem(id);
-    setItens(getEstoque());
+    try {
+      await deleteEstoqueItem(id);
+      setItens(await getEstoque());
+    } catch {
+      setErro(true);
+    }
   }
 
   function podeSalvar() {
     return novaCategoria.trim() && novoNome.trim() && Number(novaQuantidade) >= 0;
   }
 
-  function salvarNovoItem() {
+  async function salvarNovoItem() {
     if (!podeSalvar()) return;
-    addEstoqueItem({
-      id: `est-custom-${Date.now()}`,
-      categoria: novaCategoria.trim(),
-      nome: novoNome.trim(),
-      quantidade: Number(novaQuantidade),
-    });
-    setItens(getEstoque());
-    setAbertas((prev) => new Set(prev).add(novaCategoria.trim()));
-    setNovaCategoria("");
-    setNovoNome("");
-    setNovaQuantidade("1");
-    setFormAberto(false);
+    try {
+      await addEstoqueItem({
+        id: `est-custom-${Date.now()}`,
+        categoria: novaCategoria.trim(),
+        nome: novoNome.trim(),
+        quantidade: Number(novaQuantidade),
+      });
+      setItens(await getEstoque());
+      setAbertas((prev) => new Set(prev).add(novaCategoria.trim()));
+      setNovaCategoria("");
+      setNovoNome("");
+      setNovaQuantidade("1");
+      setFormAberto(false);
+    } catch {
+      setErro(true);
+    }
   }
 
   const totalItens = itens.length;
   const totalUnidades = itens.reduce((acc, i) => acc + i.quantidade, 0);
+
+  if (carregando) {
+    return <p className="text-sm text-muted">Carregando...</p>;
+  }
 
   return (
     <div className="space-y-6">
@@ -117,6 +146,12 @@ export default function EstoquePage() {
           {totalItens} itens cadastrados · {totalUnidades} unidades no total
         </p>
       </div>
+
+      {erro && (
+        <p className="rounded-xl border border-pink-dark/30 bg-pink/20 px-4 py-3 text-sm text-pink-dark">
+          Não consegui falar com a planilha agora. Confira sua internet e tente de novo.
+        </p>
+      )}
 
       {itensDanificados.length > 0 && (
         <section>

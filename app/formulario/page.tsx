@@ -47,6 +47,8 @@ export default function FormularioPublicoPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<FormState>(INITIAL_STATE);
+  const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState(false);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -59,7 +61,7 @@ export default function FormularioPublicoPage() {
     return true;
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     const evento: Evento = {
       id: `evt-${Date.now()}`,
       aniversariante: form.aniversariante.trim(),
@@ -78,8 +80,15 @@ export default function FormularioPublicoPage() {
       naoPodeFaltar: form.naoPodeFaltar.trim() || undefined,
       checklist: checklistInicial(),
     };
-    addEvento(evento);
-    router.push(`/contrato/${evento.id}`);
+    setEnviando(true);
+    setErro(false);
+    try {
+      await addEvento(evento);
+      router.push(`/contrato/${evento.id}`);
+    } catch {
+      setErro(true);
+      setEnviando(false);
+    }
   }
 
   return (
@@ -163,7 +172,13 @@ export default function FormularioPublicoPage() {
         </div>
       </div>
 
-      <div className="mx-auto mt-8 flex w-full max-w-sm gap-3">
+      {erro && (
+        <p className="mx-auto mt-4 w-full max-w-sm text-center text-xs font-medium text-pink-dark">
+          Não consegui enviar agora. Confira sua internet e tente de novo.
+        </p>
+      )}
+
+      <div className="mx-auto mt-4 flex w-full max-w-sm gap-3">
         {step > 0 && (
           <button
             onClick={() => setStep((s) => s - 1)}
@@ -173,11 +188,11 @@ export default function FormularioPublicoPage() {
           </button>
         )}
         <button
-          disabled={!podeAvancar()}
+          disabled={!podeAvancar() || enviando}
           onClick={() => (step === TOTAL_STEPS - 1 ? handleSubmit() : setStep((s) => s + 1))}
           className="flex-1 rounded-2xl bg-pink-dark px-5 py-3 text-sm font-semibold text-white disabled:opacity-40"
         >
-          {step === TOTAL_STEPS - 1 ? "Enviar" : "Continuar"}
+          {step === TOTAL_STEPS - 1 ? (enviando ? "Enviando..." : "Enviar") : "Continuar"}
         </button>
       </div>
     </div>

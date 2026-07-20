@@ -30,9 +30,15 @@ export default function CalendarioPage() {
   const [copiado, setCopiado] = useState(false);
   const [formAberto, setFormAberto] = useState(false);
   const [form, setForm] = useState(INITIAL_FORM);
+  const [carregando, setCarregando] = useState(true);
+  const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState(false);
 
   useEffect(() => {
-    setEventos(getEventos());
+    getEventos()
+      .then(setEventos)
+      .catch(() => setErro(true))
+      .finally(() => setCarregando(false));
   }, []);
 
   const ordenados = [...eventos].sort((a, b) => a.data.localeCompare(b.data));
@@ -53,7 +59,7 @@ export default function CalendarioPage() {
     return form.aniversariante.trim() && form.endereco.trim() && form.data && form.horario;
   }
 
-  function salvarEvento() {
+  async function salvarEvento() {
     if (!podeSalvar()) return;
     const evento: Evento = {
       id: `evt-${Date.now()}`,
@@ -75,10 +81,17 @@ export default function CalendarioPage() {
       naoPodeFaltar: form.naoPodeFaltar.trim() || undefined,
       checklist: checklistInicial(),
     };
-    addEvento(evento);
-    setEventos(getEventos());
-    setForm(INITIAL_FORM);
-    setFormAberto(false);
+    setSalvando(true);
+    try {
+      await addEvento(evento);
+      setEventos(await getEventos());
+      setForm(INITIAL_FORM);
+      setFormAberto(false);
+    } catch {
+      setErro(true);
+    } finally {
+      setSalvando(false);
+    }
   }
 
   return (
@@ -87,6 +100,12 @@ export default function CalendarioPage() {
         <h1 className="text-xl font-semibold">Calendário de eventos</h1>
         <p className="text-sm text-muted">Festas cadastradas, da mais próxima em diante.</p>
       </div>
+
+      {erro && (
+        <p className="rounded-xl border border-pink-dark/30 bg-pink/20 px-4 py-3 text-sm text-pink-dark">
+          Não consegui falar com a planilha agora. Confira sua internet e tente de novo.
+        </p>
+      )}
 
       <button
         onClick={copiarLink}
@@ -177,20 +196,24 @@ export default function CalendarioPage() {
             </button>
             <button
               onClick={salvarEvento}
-              disabled={!podeSalvar()}
+              disabled={!podeSalvar() || salvando}
               className="flex-1 rounded-xl bg-pink-dark px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-40"
             >
-              Salvar
+              {salvando ? "Salvando..." : "Salvar"}
             </button>
           </div>
         </div>
       )}
 
-      <div className="space-y-3">
-        {ordenados.map((evento) => (
-          <EventCard key={evento.id} evento={evento} />
-        ))}
-      </div>
+      {carregando ? (
+        <p className="text-sm text-muted">Carregando...</p>
+      ) : (
+        <div className="space-y-3">
+          {ordenados.map((evento) => (
+            <EventCard key={evento.id} evento={evento} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

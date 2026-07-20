@@ -11,15 +11,24 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [erro, setErro] = useState(false);
+  const [erro, setErro] = useState("");
+  const [enviando, setEnviando] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const ok = login(email, senha);
-    if (ok) {
-      router.push("/dashboard");
-    } else {
-      setErro(true);
+    setEnviando(true);
+    setErro("");
+    try {
+      const ok = await login(email, senha);
+      if (ok) {
+        router.push("/dashboard");
+      } else {
+        setErro("E-mail ou senha incorretos.");
+      }
+    } catch {
+      setErro("Não consegui conectar com a planilha agora. Tente de novo em instantes.");
+    } finally {
+      setEnviando(false);
     }
   }
 
@@ -40,7 +49,7 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
-              setErro(false);
+              setErro("");
             }}
             className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
             autoComplete="username"
@@ -55,7 +64,7 @@ export default function LoginPage() {
             value={senha}
             onChange={(e) => {
               setSenha(e.target.value);
-              setErro(false);
+              setErro("");
             }}
             className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
             autoComplete="current-password"
@@ -63,15 +72,14 @@ export default function LoginPage() {
           />
         </label>
 
-        {erro && (
-          <p className="text-xs font-medium text-pink-dark">E-mail ou senha incorretos.</p>
-        )}
+        {erro && <p className="text-xs font-medium text-pink-dark">{erro}</p>}
 
         <button
           type="submit"
-          className="w-full rounded-2xl bg-pink-dark px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition-transform active:scale-[0.98]"
+          disabled={enviando}
+          className="w-full rounded-2xl bg-pink-dark px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition-transform active:scale-[0.98] disabled:opacity-60"
         >
-          Entrar
+          {enviando ? "Entrando..." : "Entrar"}
         </button>
       </form>
     </div>

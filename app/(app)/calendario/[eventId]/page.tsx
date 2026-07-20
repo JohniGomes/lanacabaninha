@@ -38,17 +38,25 @@ export default function EventoDetalhePage() {
   const [itensAlugados, setItensAlugados] = useState("");
   const [itensAdicionais, setItensAdicionais] = useState("");
 
+  const [carregando, setCarregando] = useState(true);
+  const [salvandoContrato, setSalvandoContrato] = useState(false);
+  const [erro, setErro] = useState(false);
+
   useEffect(() => {
-    const e = getEvento(params.eventId) ?? null;
-    setEvento(e);
-    setEstoqueItens(getEstoque());
-    if (e) {
-      setQuantidadeCabanas(e.quantidadeCabanas ? String(e.quantidadeCabanas) : "");
-      setValorContrato(e.valorContrato ? String(e.valorContrato) : "");
-      setFormaPagamento(e.formaPagamento ?? "");
-      setItensAlugados(e.itensAlugados ?? "");
-      setItensAdicionais(e.itensAdicionais ?? "");
-    }
+    Promise.all([getEvento(params.eventId), getEstoque()])
+      .then(([e, estoque]) => {
+        setEvento(e ?? null);
+        setEstoqueItens(estoque);
+        if (e) {
+          setQuantidadeCabanas(e.quantidadeCabanas ? String(e.quantidadeCabanas) : "");
+          setValorContrato(e.valorContrato ? String(e.valorContrato) : "");
+          setFormaPagamento(e.formaPagamento ?? "");
+          setItensAlugados(e.itensAlugados ?? "");
+          setItensAdicionais(e.itensAdicionais ?? "");
+        }
+      })
+      .catch(() => setErro(true))
+      .finally(() => setCarregando(false));
   }, [params.eventId]);
 
   function copiarLinkContrato() {
@@ -59,23 +67,39 @@ export default function EventoDetalhePage() {
     });
   }
 
-  function salvarDadosContrato() {
-    const atualizado = atualizarDadosContrato(params.eventId, {
+  async function salvarDadosContrato() {
+    const dados = {
       quantidadeCabanas: quantidadeCabanas ? Number(quantidadeCabanas) : undefined,
       valorContrato: valorContrato ? Number(valorContrato) : undefined,
       formaPagamento: formaPagamento.trim() || undefined,
       itensAlugados: itensAlugados.trim() || undefined,
       itensAdicionais: itensAdicionais.trim() || undefined,
-    });
-    if (atualizado) setEvento(atualizado);
-    setFormContratoAberto(false);
+    };
+    setSalvandoContrato(true);
+    try {
+      await atualizarDadosContrato(params.eventId, dados);
+      setEvento((atual) => (atual ? { ...atual, ...dados } : atual));
+      setFormContratoAberto(false);
+    } catch {
+      setErro(true);
+    } finally {
+      setSalvandoContrato(false);
+    }
   }
 
-  if (evento === undefined) {
+  if (carregando) {
     return <p className="text-sm text-muted">Carregando...</p>;
   }
 
-  if (evento === null) {
+  if (erro) {
+    return (
+      <p className="rounded-xl border border-pink-dark/30 bg-pink/20 px-4 py-3 text-sm text-pink-dark">
+        Não consegui falar com a planilha agora. Confira sua internet e tente de novo.
+      </p>
+    );
+  }
+
+  if (!evento) {
     return (
       <div className="space-y-3">
         <p className="text-sm text-muted">Evento não encontrado.</p>
@@ -88,47 +112,71 @@ export default function EventoDetalhePage() {
 
   const colecao = evento.colecaoId ? colecoes.find((c) => c.id === evento.colecaoId) : undefined;
 
-  function handleMarcarDanificado(
+  async function handleMarcarDanificado(
     itemId: string,
     dados: { observacao: string; estoqueItemId?: string; quantidadeDanificada?: number }
   ) {
-    const atualizado = marcarDanificado(params.eventId, itemId, dados);
-    if (atualizado) setEvento(atualizado);
-    setEstoqueItens(getEstoque());
+    try {
+      const atualizado = await marcarDanificado(params.eventId, itemId, dados);
+      if (atualizado) setEvento(atualizado);
+      setEstoqueItens(await getEstoque());
+    } catch {
+      setErro(true);
+    }
   }
 
-  function handleDesmarcarDanificado(itemId: string) {
-    const atualizado = desmarcarDanificado(params.eventId, itemId);
-    if (atualizado) setEvento(atualizado);
-    setEstoqueItens(getEstoque());
+  async function handleDesmarcarDanificado(itemId: string) {
+    try {
+      const atualizado = await desmarcarDanificado(params.eventId, itemId);
+      if (atualizado) setEvento(atualizado);
+      setEstoqueItens(await getEstoque());
+    } catch {
+      setErro(true);
+    }
   }
 
-  function handleEditarItem(itemId: string, dados: { nome: string; quantidade?: number }) {
-    const atualizado = updateChecklistItem(params.eventId, itemId, dados);
-    if (atualizado) setEvento(atualizado);
+  async function handleEditarItem(itemId: string, dados: { nome: string; quantidade?: number }) {
+    try {
+      const atualizado = await updateChecklistItem(params.eventId, itemId, dados);
+      if (atualizado) setEvento(atualizado);
+    } catch {
+      setErro(true);
+    }
   }
 
-  function handleEditarDescricao(itemId: string, descricao: string) {
-    const atualizado = updateChecklistItem(params.eventId, itemId, { descricao });
-    if (atualizado) setEvento(atualizado);
+  async function handleEditarDescricao(itemId: string, descricao: string) {
+    try {
+      const atualizado = await updateChecklistItem(params.eventId, itemId, { descricao });
+      if (atualizado) setEvento(atualizado);
+    } catch {
+      setErro(true);
+    }
   }
 
-  function handleExcluirItem(itemId: string) {
-    const atualizado = removeChecklistItem(params.eventId, itemId);
-    if (atualizado) setEvento(atualizado);
+  async function handleExcluirItem(itemId: string) {
+    try {
+      const atualizado = await removeChecklistItem(params.eventId, itemId);
+      if (atualizado) setEvento(atualizado);
+    } catch {
+      setErro(true);
+    }
   }
 
-  function handleAdicionarItem() {
+  async function handleAdicionarItem() {
     if (!novoItemNome.trim() || Number(novoItemQuantidade) <= 0) return;
-    const atualizado = addChecklistItem(params.eventId, {
-      id: crypto.randomUUID(),
-      nome: novoItemNome.trim(),
-      quantidade: Number(novoItemQuantidade),
-    });
-    if (atualizado) setEvento(atualizado);
-    setNovoItemNome("");
-    setNovoItemQuantidade("1");
-    setFormNovoItemAberto(false);
+    try {
+      const atualizado = await addChecklistItem(params.eventId, {
+        id: crypto.randomUUID(),
+        nome: novoItemNome.trim(),
+        quantidade: Number(novoItemQuantidade),
+      });
+      if (atualizado) setEvento(atualizado);
+      setNovoItemNome("");
+      setNovoItemQuantidade("1");
+      setFormNovoItemAberto(false);
+    } catch {
+      setErro(true);
+    }
   }
 
   return (
@@ -255,9 +303,10 @@ export default function EventoDetalhePage() {
                 </button>
                 <button
                   onClick={salvarDadosContrato}
-                  className="flex-1 rounded-xl bg-pink-dark px-4 py-2.5 text-sm font-semibold text-white"
+                  disabled={salvandoContrato}
+                  className="flex-1 rounded-xl bg-pink-dark px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
                 >
-                  Salvar
+                  {salvandoContrato ? "Salvando..." : "Salvar"}
                 </button>
               </div>
             </div>
