@@ -157,7 +157,10 @@ function objetoParaLinha_(headers, obj, nomeAba) {
 
 function inserirLinha_(aba, nomeAba, data) {
   var headers = cabecalhos_(aba);
-  aba.appendRow(objetoParaLinha_(headers, data, nomeAba));
+  var numeroLinha = aba.getLastRow() + 1;
+  var range = aba.getRange(numeroLinha, 1, 1, headers.length);
+  range.setNumberFormat("@");
+  range.setValues([objetoParaLinha_(headers, data, nomeAba)]);
 }
 
 function encontrarLinhaPorId_(aba, id) {
@@ -178,7 +181,9 @@ function atualizarLinha_(aba, nomeAba, id, data) {
   var objAtual = linhaParaObjeto_(headers, linhaAtual, nomeAba);
   var objMesclado = Object.assign({}, objAtual, data, { id: id });
   var novaLinha = objetoParaLinha_(headers, objMesclado, nomeAba);
-  aba.getRange(numeroLinha, 1, 1, headers.length).setValues([novaLinha]);
+  var range = aba.getRange(numeroLinha, 1, 1, headers.length);
+  range.setNumberFormat("@");
+  range.setValues([novaLinha]);
 }
 
 function excluirLinha_(aba, id) {

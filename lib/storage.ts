@@ -54,6 +54,18 @@ export async function atualizarDadosContrato(eventoId: string, dados: DadosContr
   await mutar({ action: "update", sheet: "Eventos", id: eventoId, data: dados as unknown as Record<string, unknown> });
 }
 
+export interface DadosGerais {
+  aniversariante?: string;
+  idade?: number;
+  contatoNome?: string;
+  contatoTelefone?: string;
+  contatoEmail?: string;
+}
+
+export async function atualizarDadosGerais(eventoId: string, dados: DadosGerais): Promise<void> {
+  await mutar({ action: "update", sheet: "Eventos", id: eventoId, data: dados as unknown as Record<string, unknown> });
+}
+
 export interface DadosDanificado {
   observacao: string;
   estoqueItemId?: string;

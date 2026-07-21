@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChecklistItemRow } from "@/components/ChecklistItemRow";
-import { IconArrowLeft, IconCheckCircle, IconClock, IconLink } from "@/components/Icons";
+import { IconArrowLeft, IconCheckCircle, IconClock, IconLink, IconPencil } from "@/components/Icons";
 import {
   addChecklistItem,
   atualizarDadosContrato,
+  atualizarDadosGerais,
   desmarcarDanificado,
   getEstoque,
   getEvento,
@@ -38,6 +39,17 @@ export default function EventoDetalhePage() {
   const [itensAlugados, setItensAlugados] = useState("");
   const [itensAdicionais, setItensAdicionais] = useState("");
 
+  const [formNomeAberto, setFormNomeAberto] = useState(false);
+  const [editAniversariante, setEditAniversariante] = useState("");
+  const [editIdade, setEditIdade] = useState("");
+  const [salvandoNome, setSalvandoNome] = useState(false);
+
+  const [formContatoAberto, setFormContatoAberto] = useState(false);
+  const [editContatoNome, setEditContatoNome] = useState("");
+  const [editContatoTelefone, setEditContatoTelefone] = useState("");
+  const [editContatoEmail, setEditContatoEmail] = useState("");
+  const [salvandoContato, setSalvandoContato] = useState(false);
+
   const [carregando, setCarregando] = useState(true);
   const [salvandoContrato, setSalvandoContrato] = useState(false);
   const [erro, setErro] = useState(false);
@@ -53,6 +65,11 @@ export default function EventoDetalhePage() {
           setFormaPagamento(e.formaPagamento ?? "");
           setItensAlugados(e.itensAlugados ?? "");
           setItensAdicionais(e.itensAdicionais ?? "");
+          setEditAniversariante(e.aniversariante);
+          setEditIdade(e.idade ? String(e.idade) : "");
+          setEditContatoNome(e.contatoNome);
+          setEditContatoTelefone(e.contatoTelefone ?? "");
+          setEditContatoEmail(e.contatoEmail ?? "");
         }
       })
       .catch(() => setErro(true))
@@ -84,6 +101,43 @@ export default function EventoDetalhePage() {
       setErro(true);
     } finally {
       setSalvandoContrato(false);
+    }
+  }
+
+  async function salvarNome() {
+    if (!editAniversariante.trim()) return;
+    const dados = {
+      aniversariante: editAniversariante.trim(),
+      idade: editIdade ? Number(editIdade) : undefined,
+    };
+    setSalvandoNome(true);
+    try {
+      await atualizarDadosGerais(params.eventId, dados);
+      setEvento((atual) => (atual ? { ...atual, ...dados } : atual));
+      setFormNomeAberto(false);
+    } catch {
+      setErro(true);
+    } finally {
+      setSalvandoNome(false);
+    }
+  }
+
+  async function salvarContato() {
+    if (!editContatoNome.trim()) return;
+    const dados = {
+      contatoNome: editContatoNome.trim(),
+      contatoTelefone: editContatoTelefone.trim() || undefined,
+      contatoEmail: editContatoEmail.trim() || undefined,
+    };
+    setSalvandoContato(true);
+    try {
+      await atualizarDadosGerais(params.eventId, dados);
+      setEvento((atual) => (atual ? { ...atual, ...dados } : atual));
+      setFormContatoAberto(false);
+    } catch {
+      setErro(true);
+    } finally {
+      setSalvandoContato(false);
     }
   }
 
@@ -192,16 +246,124 @@ export default function EventoDetalhePage() {
         <p className="text-xs font-medium uppercase tracking-wide text-pink-dark">
           {formatDateLong(evento.data)} · {evento.horario}
         </p>
-        <h1 className="mt-1 text-xl font-semibold">
-          {evento.aniversariante}
-          {evento.idade ? ` · ${evento.idade} anos` : ""}
-        </h1>
+
+        {!formNomeAberto ? (
+          <div className="mt-1 flex items-start justify-between gap-2">
+            <h1 className="text-xl font-semibold">
+              {evento.aniversariante}
+              {evento.idade ? ` · ${evento.idade} anos` : ""}
+            </h1>
+            <button
+              onClick={() => setFormNomeAberto(true)}
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted"
+              aria-label="Editar nome"
+            >
+              <IconPencil className="h-4 w-4" />
+            </button>
+          </div>
+        ) : (
+          <div className="mt-2 space-y-2">
+            <div className="grid grid-cols-3 gap-2">
+              <input
+                value={editAniversariante}
+                onChange={(e) => setEditAniversariante(e.target.value)}
+                placeholder="Nome da aniversariante"
+                className="col-span-2 rounded-lg border border-border bg-cream px-3 py-2 text-sm outline-none focus:border-pink-dark"
+              />
+              <input
+                type="number"
+                min={0}
+                value={editIdade}
+                onChange={(e) => setEditIdade(e.target.value)}
+                placeholder="Idade"
+                className="rounded-lg border border-border bg-cream px-3 py-2 text-sm outline-none focus:border-pink-dark"
+              />
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setFormNomeAberto(false);
+                  setEditAniversariante(evento.aniversariante);
+                  setEditIdade(evento.idade ? String(evento.idade) : "");
+                }}
+                className="flex-1 rounded-lg border border-border py-1.5 text-xs font-semibold text-foreground"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={salvarNome}
+                disabled={salvandoNome || !editAniversariante.trim()}
+                className="flex-1 rounded-lg bg-pink-dark py-1.5 text-xs font-semibold text-white disabled:opacity-40"
+              >
+                {salvandoNome ? "Salvando..." : "Salvar"}
+              </button>
+            </div>
+          </div>
+        )}
+
         <p className="text-sm text-muted">
           {colecao ? `Experiência Assinada — ${colecao.nome}` : `${evento.tema} (Personalizada)`}
         </p>
 
         <dl className="mt-4 space-y-1.5 text-sm">
-          <Row label="Contato" value={`${evento.contatoNome}${evento.contatoTelefone ? " · " + evento.contatoTelefone : ""}`} />
+          {!formContatoAberto ? (
+            <div className="flex items-start gap-2">
+              <dt className="w-28 shrink-0 text-muted">Contato</dt>
+              <dd className="flex-1 text-foreground">
+                {evento.contatoNome}
+                {evento.contatoTelefone ? " · " + evento.contatoTelefone : ""}
+                {evento.contatoEmail ? " · " + evento.contatoEmail : ""}
+              </dd>
+              <button
+                onClick={() => setFormContatoAberto(true)}
+                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-muted"
+                aria-label="Editar contato"
+              >
+                <IconPencil className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-2 rounded-xl border border-border bg-cream/60 p-3">
+              <input
+                value={editContatoNome}
+                onChange={(e) => setEditContatoNome(e.target.value)}
+                placeholder="Nome de quem organiza"
+                className="w-full rounded-lg border border-border bg-cream px-3 py-2 text-xs outline-none focus:border-pink-dark"
+              />
+              <input
+                value={editContatoTelefone}
+                onChange={(e) => setEditContatoTelefone(e.target.value)}
+                placeholder="WhatsApp"
+                className="w-full rounded-lg border border-border bg-cream px-3 py-2 text-xs outline-none focus:border-pink-dark"
+              />
+              <input
+                value={editContatoEmail}
+                onChange={(e) => setEditContatoEmail(e.target.value)}
+                placeholder="E-mail"
+                className="w-full rounded-lg border border-border bg-cream px-3 py-2 text-xs outline-none focus:border-pink-dark"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setFormContatoAberto(false);
+                    setEditContatoNome(evento.contatoNome);
+                    setEditContatoTelefone(evento.contatoTelefone ?? "");
+                    setEditContatoEmail(evento.contatoEmail ?? "");
+                  }}
+                  className="flex-1 rounded-lg border border-border py-1.5 text-xs font-semibold text-foreground"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={salvarContato}
+                  disabled={salvandoContato || !editContatoNome.trim()}
+                  className="flex-1 rounded-lg bg-pink-dark py-1.5 text-xs font-semibold text-white disabled:opacity-40"
+                >
+                  {salvandoContato ? "Salvando..." : "Salvar"}
+                </button>
+              </div>
+            </div>
+          )}
           <Row label="Endereço" value={evento.endereco} />
           {evento.responsavelMontagem && <Row label="Montagem" value={evento.responsavelMontagem} />}
           {evento.horarioRecreacao && <Row label="Recreação" value={evento.horarioRecreacao} />}
