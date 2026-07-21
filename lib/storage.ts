@@ -60,6 +60,10 @@ export interface DadosGerais {
   contatoNome?: string;
   contatoTelefone?: string;
   contatoEmail?: string;
+  endereco?: string;
+  corFavorita?: string;
+  corNaoGosta?: string;
+  naoPodeFaltar?: string;
 }
 
 export async function atualizarDadosGerais(eventoId: string, dados: DadosGerais): Promise<void> {

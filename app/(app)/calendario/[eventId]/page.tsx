@@ -50,6 +50,13 @@ export default function EventoDetalhePage() {
   const [editContatoEmail, setEditContatoEmail] = useState("");
   const [salvandoContato, setSalvandoContato] = useState(false);
 
+  const [formDetalhesAberto, setFormDetalhesAberto] = useState(false);
+  const [editEndereco, setEditEndereco] = useState("");
+  const [editCorFavorita, setEditCorFavorita] = useState("");
+  const [editCorNaoGosta, setEditCorNaoGosta] = useState("");
+  const [editNaoPodeFaltar, setEditNaoPodeFaltar] = useState("");
+  const [salvandoDetalhes, setSalvandoDetalhes] = useState(false);
+
   const [carregando, setCarregando] = useState(true);
   const [salvandoContrato, setSalvandoContrato] = useState(false);
   const [erro, setErro] = useState(false);
@@ -70,6 +77,10 @@ export default function EventoDetalhePage() {
           setEditContatoNome(e.contatoNome);
           setEditContatoTelefone(e.contatoTelefone ?? "");
           setEditContatoEmail(e.contatoEmail ?? "");
+          setEditEndereco(e.endereco);
+          setEditCorFavorita(e.corFavorita ?? "");
+          setEditCorNaoGosta(e.corNaoGosta ?? "");
+          setEditNaoPodeFaltar(e.naoPodeFaltar ?? "");
         }
       })
       .catch(() => setErro(true))
@@ -138,6 +149,26 @@ export default function EventoDetalhePage() {
       setErro(true);
     } finally {
       setSalvandoContato(false);
+    }
+  }
+
+  async function salvarDetalhes() {
+    if (!editEndereco.trim()) return;
+    const dados = {
+      endereco: editEndereco.trim(),
+      corFavorita: editCorFavorita.trim() || undefined,
+      corNaoGosta: editCorNaoGosta.trim() || undefined,
+      naoPodeFaltar: editNaoPodeFaltar.trim() || undefined,
+    };
+    setSalvandoDetalhes(true);
+    try {
+      await atualizarDadosGerais(params.eventId, dados);
+      setEvento((atual) => (atual ? { ...atual, ...dados } : atual));
+      setFormDetalhesAberto(false);
+    } catch {
+      setErro(true);
+    } finally {
+      setSalvandoDetalhes(false);
     }
   }
 
@@ -364,13 +395,78 @@ export default function EventoDetalhePage() {
               </div>
             </div>
           )}
-          <Row label="Endereço" value={evento.endereco} />
+          {!formDetalhesAberto ? (
+            <>
+              <div className="flex items-start gap-2">
+                <dt className="w-28 shrink-0 text-muted">Endereço</dt>
+                <dd className="flex-1 text-foreground">{evento.endereco}</dd>
+                <button
+                  onClick={() => setFormDetalhesAberto(true)}
+                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-muted"
+                  aria-label="Editar endereço e preferências"
+                >
+                  <IconPencil className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              {evento.corFavorita && <Row label="Cores favoritas" value={evento.corFavorita} />}
+              {evento.corNaoGosta && <Row label="Evitar" value={evento.corNaoGosta} />}
+              {evento.naoPodeFaltar && <Row label="Não pode faltar" value={evento.naoPodeFaltar} />}
+            </>
+          ) : (
+            <div className="space-y-2 rounded-xl border border-border bg-cream/60 p-3">
+              <input
+                value={editEndereco}
+                onChange={(e) => setEditEndereco(e.target.value)}
+                placeholder="Endereço"
+                className="w-full rounded-lg border border-border bg-cream px-3 py-2 text-xs outline-none focus:border-pink-dark"
+              />
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  value={editCorFavorita}
+                  onChange={(e) => setEditCorFavorita(e.target.value)}
+                  placeholder="Cores favoritas"
+                  className="rounded-lg border border-border bg-cream px-3 py-2 text-xs outline-none focus:border-pink-dark"
+                />
+                <input
+                  value={editCorNaoGosta}
+                  onChange={(e) => setEditCorNaoGosta(e.target.value)}
+                  placeholder="Cor que não gosta"
+                  className="rounded-lg border border-border bg-cream px-3 py-2 text-xs outline-none focus:border-pink-dark"
+                />
+              </div>
+              <textarea
+                value={editNaoPodeFaltar}
+                onChange={(e) => setEditNaoPodeFaltar(e.target.value)}
+                placeholder="O que não pode faltar"
+                rows={2}
+                className="w-full rounded-lg border border-border bg-cream px-3 py-2 text-xs outline-none focus:border-pink-dark"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setFormDetalhesAberto(false);
+                    setEditEndereco(evento.endereco);
+                    setEditCorFavorita(evento.corFavorita ?? "");
+                    setEditCorNaoGosta(evento.corNaoGosta ?? "");
+                    setEditNaoPodeFaltar(evento.naoPodeFaltar ?? "");
+                  }}
+                  className="flex-1 rounded-lg border border-border py-1.5 text-xs font-semibold text-foreground"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={salvarDetalhes}
+                  disabled={salvandoDetalhes || !editEndereco.trim()}
+                  className="flex-1 rounded-lg bg-pink-dark py-1.5 text-xs font-semibold text-white disabled:opacity-40"
+                >
+                  {salvandoDetalhes ? "Salvando..." : "Salvar"}
+                </button>
+              </div>
+            </div>
+          )}
           {evento.responsavelMontagem && <Row label="Montagem" value={evento.responsavelMontagem} />}
           {evento.horarioRecreacao && <Row label="Recreação" value={evento.horarioRecreacao} />}
           {evento.horarioSpa && <Row label="Spa" value={evento.horarioSpa} />}
-          {evento.corFavorita && <Row label="Cores favoritas" value={evento.corFavorita} />}
-          {evento.corNaoGosta && <Row label="Evitar" value={evento.corNaoGosta} />}
-          {evento.naoPodeFaltar && <Row label="Não pode faltar" value={evento.naoPodeFaltar} />}
           {evento.observacoes && <Row label="Obs." value={evento.observacoes} />}
         </dl>
       </div>
