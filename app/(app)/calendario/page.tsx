@@ -25,6 +25,8 @@ const INITIAL_FORM = {
   naoPodeFaltar: "",
 };
 
+type Aba = "proximas" | "passadas";
+
 export default function CalendarioPage() {
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [copiado, setCopiado] = useState(false);
@@ -33,6 +35,7 @@ export default function CalendarioPage() {
   const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState(false);
+  const [aba, setAba] = useState<Aba>("proximas");
 
   useEffect(() => {
     getEventos()
@@ -41,7 +44,10 @@ export default function CalendarioPage() {
       .finally(() => setCarregando(false));
   }, []);
 
-  const ordenados = [...eventos].sort((a, b) => a.data.localeCompare(b.data));
+  const hoje = new Date().toISOString().slice(0, 10);
+  const proximas = [...eventos].filter((e) => e.data >= hoje).sort((a, b) => a.data.localeCompare(b.data));
+  const passadas = [...eventos].filter((e) => e.data < hoje).sort((a, b) => b.data.localeCompare(a.data));
+  const ordenados = aba === "proximas" ? proximas : passadas;
 
   function update<K extends keyof typeof INITIAL_FORM>(key: K, value: (typeof INITIAL_FORM)[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -205,8 +211,25 @@ export default function CalendarioPage() {
         </div>
       )}
 
+      <div className="flex gap-2">
+        <AbaButton
+          label={`Próximas (${proximas.length})`}
+          ativo={aba === "proximas"}
+          onClick={() => setAba("proximas")}
+        />
+        <AbaButton
+          label={`Passadas (${passadas.length})`}
+          ativo={aba === "passadas"}
+          onClick={() => setAba("passadas")}
+        />
+      </div>
+
       {carregando ? (
         <p className="text-sm text-muted">Carregando...</p>
+      ) : ordenados.length === 0 ? (
+        <p className="text-center text-sm text-muted">
+          {aba === "proximas" ? "Nenhuma festa agendada." : "Nenhuma festa passada ainda."}
+        </p>
       ) : (
         <div className="space-y-3">
           {ordenados.map((evento) => (
@@ -215,6 +238,19 @@ export default function CalendarioPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function AbaButton({ label, ativo, onClick }: { label: string; ativo: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex-1 rounded-full px-4 py-2 text-xs font-semibold transition-colors ${
+        ativo ? "bg-pink-dark text-white" : "border border-border bg-surface text-muted"
+      }`}
+    >
+      {label}
+    </button>
   );
 }
 
