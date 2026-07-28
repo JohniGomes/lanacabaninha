@@ -56,7 +56,7 @@ export default function CalendarioPage() {
   }
 
   function podeSalvar() {
-    return form.aniversariante.trim() && form.endereco.trim() && form.data && form.horario;
+    return form.aniversariante.trim() && form.data;
   }
 
   async function salvarEvento() {
@@ -239,6 +239,7 @@ function Field({
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
+        step={type === "time" ? 1800 : undefined}
         className="w-full rounded-xl border border-border bg-cream px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
       />
     </label>

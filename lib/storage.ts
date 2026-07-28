@@ -64,6 +64,8 @@ export interface DadosGerais {
   corFavorita?: string;
   corNaoGosta?: string;
   naoPodeFaltar?: string;
+  data?: string;
+  horario?: string;
 }
 
 export async function atualizarDadosGerais(eventoId: string, dados: DadosGerais): Promise<void> {
@@ -171,6 +173,14 @@ export async function removeChecklistItem(eventoId: string, itemId: string): Pro
   const checklist = evento.checklist.filter((item) => item.id !== itemId);
   await mutar({ action: "update", sheet: "Eventos", id: eventoId, data: { checklist } });
   return { ...evento, checklist };
+}
+
+export async function atualizarChecklist(eventoId: string, checklist: ChecklistItem[]): Promise<void> {
+  await mutar({ action: "update", sheet: "Eventos", id: eventoId, data: { checklist } });
+}
+
+export async function deleteEvento(id: string): Promise<void> {
+  await mutar({ action: "delete", sheet: "Eventos", id });
 }
 
 // ---------------------------------------------------------------------------

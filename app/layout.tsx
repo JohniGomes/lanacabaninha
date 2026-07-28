@@ -22,11 +22,11 @@ const siteUrl = process.env.VERCEL_URL
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "Lá Na Cabaninha",
-  description: "Sistema de gestão de festas do pijama — protótipo",
+  description: "Organização de festas do pijama — Lá Na Cabaninha",
   manifest: "/manifest.webmanifest",
   openGraph: {
     title: "Lá Na Cabaninha",
-    description: "Sistema de gestão de festas do pijama — protótipo",
+    description: "Organização de festas do pijama — Lá Na Cabaninha",
     siteName: "Lá Na Cabaninha",
     locale: "pt_BR",
     type: "website",
