@@ -1,4 +1,4 @@
-import { listar, mutar } from "./sheets-api";
+import { atualizar, buscarPorId, excluir, inserir, listar } from "./api-client";
 import { ChecklistItem, EstoqueItem, Evento, Fornecedor, LancamentoFinanceiro, Role } from "./types";
 
 const ROLE_KEY = "lnc_role";
@@ -12,33 +12,27 @@ function isBrowser() {
 // ---------------------------------------------------------------------------
 
 export async function getEventos(): Promise<Evento[]> {
-  return listar<Evento>("Eventos");
+  return listar<Evento>("eventos");
 }
 
 export async function getEvento(id: string): Promise<Evento | undefined> {
-  const eventos = await getEventos();
-  return eventos.find((e) => e.id === id);
+  return buscarPorId<Evento>("eventos", id);
 }
 
 export async function addEvento(evento: Evento): Promise<void> {
-  await mutar({ action: "insert", sheet: "Eventos", data: evento as unknown as Record<string, unknown> });
+  await inserir("eventos", evento as unknown as Record<string, unknown>);
 }
 
 export async function aceitarContrato(
   eventoId: string,
   dados: { nome: string; cpf: string; rg: string }
 ): Promise<void> {
-  await mutar({
-    action: "update",
-    sheet: "Eventos",
-    id: eventoId,
-    data: {
-      contatoNome: dados.nome,
-      contratoAceito: true,
-      contratoAceitoEm: new Date().toISOString(),
-      cpfContratante: dados.cpf,
-      rgContratante: dados.rg,
-    },
+  await atualizar("eventos", eventoId, {
+    contatoNome: dados.nome,
+    contratoAceito: true,
+    contratoAceitoEm: new Date().toISOString(),
+    cpfContratante: dados.cpf,
+    rgContratante: dados.rg,
   });
 }
 
@@ -51,7 +45,7 @@ export interface DadosContrato {
 }
 
 export async function atualizarDadosContrato(eventoId: string, dados: DadosContrato): Promise<void> {
-  await mutar({ action: "update", sheet: "Eventos", id: eventoId, data: dados as unknown as Record<string, unknown> });
+  await atualizar("eventos", eventoId, dados as unknown as Record<string, unknown>);
 }
 
 export interface DadosGerais {
@@ -69,7 +63,7 @@ export interface DadosGerais {
 }
 
 export async function atualizarDadosGerais(eventoId: string, dados: DadosGerais): Promise<void> {
-  await mutar({ action: "update", sheet: "Eventos", id: eventoId, data: dados as unknown as Record<string, unknown> });
+  await atualizar("eventos", eventoId, dados as unknown as Record<string, unknown>);
 }
 
 export interface DadosDanificado {
@@ -96,17 +90,14 @@ export async function marcarDanificado(
         }
       : item
   );
-  await mutar({ action: "update", sheet: "Eventos", id: eventoId, data: { checklist } });
+  await atualizar("eventos", eventoId, { checklist });
 
   if (dados.estoqueItemId && dados.quantidadeDanificada) {
     const itens = await getEstoque();
     const alvo = itens.find((i) => i.id === dados.estoqueItemId);
     if (alvo) {
-      await mutar({
-        action: "update",
-        sheet: "Estoque",
-        id: alvo.id,
-        data: { quantidade: Math.max(0, alvo.quantidade - dados.quantidadeDanificada) },
+      await atualizar("estoque", alvo.id, {
+        quantidade: Math.max(0, alvo.quantidade - dados.quantidadeDanificada),
       });
     }
   }
@@ -123,11 +114,8 @@ export async function desmarcarDanificado(eventoId: string, itemId: string): Pro
     const itens = await getEstoque();
     const alvo = itens.find((i) => i.id === itemAtual.estoqueItemId);
     if (alvo) {
-      await mutar({
-        action: "update",
-        sheet: "Estoque",
-        id: alvo.id,
-        data: { quantidade: alvo.quantidade + itemAtual.quantidadeDanificada },
+      await atualizar("estoque", alvo.id, {
+        quantidade: alvo.quantidade + itemAtual.quantidadeDanificada,
       });
     }
   }
@@ -143,7 +131,7 @@ export async function desmarcarDanificado(eventoId: string, itemId: string): Pro
         }
       : item
   );
-  await mutar({ action: "update", sheet: "Eventos", id: eventoId, data: { checklist } });
+  await atualizar("eventos", eventoId, { checklist });
   return { ...evento, checklist };
 }
 
@@ -151,7 +139,7 @@ export async function addChecklistItem(eventoId: string, item: ChecklistItem): P
   const evento = await getEvento(eventoId);
   if (!evento) return undefined;
   const checklist = [...evento.checklist, item];
-  await mutar({ action: "update", sheet: "Eventos", id: eventoId, data: { checklist } });
+  await atualizar("eventos", eventoId, { checklist });
   return { ...evento, checklist };
 }
 
@@ -163,7 +151,7 @@ export async function updateChecklistItem(
   const evento = await getEvento(eventoId);
   if (!evento) return undefined;
   const checklist = evento.checklist.map((item) => (item.id === itemId ? { ...item, ...dados } : item));
-  await mutar({ action: "update", sheet: "Eventos", id: eventoId, data: { checklist } });
+  await atualizar("eventos", eventoId, { checklist });
   return { ...evento, checklist };
 }
 
@@ -171,16 +159,16 @@ export async function removeChecklistItem(eventoId: string, itemId: string): Pro
   const evento = await getEvento(eventoId);
   if (!evento) return undefined;
   const checklist = evento.checklist.filter((item) => item.id !== itemId);
-  await mutar({ action: "update", sheet: "Eventos", id: eventoId, data: { checklist } });
+  await atualizar("eventos", eventoId, { checklist });
   return { ...evento, checklist };
 }
 
 export async function atualizarChecklist(eventoId: string, checklist: ChecklistItem[]): Promise<void> {
-  await mutar({ action: "update", sheet: "Eventos", id: eventoId, data: { checklist } });
+  await atualizar("eventos", eventoId, { checklist });
 }
 
 export async function deleteEvento(id: string): Promise<void> {
-  await mutar({ action: "delete", sheet: "Eventos", id });
+  await excluir("eventos", id);
 }
 
 // ---------------------------------------------------------------------------
@@ -188,15 +176,11 @@ export async function deleteEvento(id: string): Promise<void> {
 // ---------------------------------------------------------------------------
 
 export async function getLancamentos(): Promise<LancamentoFinanceiro[]> {
-  return listar<LancamentoFinanceiro>("Financeiro");
+  return listar<LancamentoFinanceiro>("financeiro");
 }
 
 export async function addLancamento(lancamento: LancamentoFinanceiro): Promise<void> {
-  await mutar({
-    action: "insert",
-    sheet: "Financeiro",
-    data: lancamento as unknown as Record<string, unknown>,
-  });
+  await inserir("financeiro", lancamento as unknown as Record<string, unknown>);
 }
 
 // ---------------------------------------------------------------------------
@@ -204,15 +188,11 @@ export async function addLancamento(lancamento: LancamentoFinanceiro): Promise<v
 // ---------------------------------------------------------------------------
 
 export async function getFornecedores(): Promise<Fornecedor[]> {
-  return listar<Fornecedor>("Fornecedores");
+  return listar<Fornecedor>("fornecedores");
 }
 
 export async function addFornecedor(fornecedor: Fornecedor): Promise<void> {
-  await mutar({
-    action: "insert",
-    sheet: "Fornecedores",
-    data: fornecedor as unknown as Record<string, unknown>,
-  });
+  await inserir("fornecedores", fornecedor as unknown as Record<string, unknown>);
 }
 
 // ---------------------------------------------------------------------------
@@ -220,19 +200,19 @@ export async function addFornecedor(fornecedor: Fornecedor): Promise<void> {
 // ---------------------------------------------------------------------------
 
 export async function getEstoque(): Promise<EstoqueItem[]> {
-  return listar<EstoqueItem>("Estoque");
+  return listar<EstoqueItem>("estoque");
 }
 
 export async function addEstoqueItem(item: EstoqueItem): Promise<void> {
-  await mutar({ action: "insert", sheet: "Estoque", data: item as unknown as Record<string, unknown> });
+  await inserir("estoque", item as unknown as Record<string, unknown>);
 }
 
 export async function updateEstoqueItem(id: string, quantidade: number): Promise<void> {
-  await mutar({ action: "update", sheet: "Estoque", id, data: { quantidade } });
+  await atualizar("estoque", id, { quantidade });
 }
 
 export async function deleteEstoqueItem(id: string): Promise<void> {
-  await mutar({ action: "delete", sheet: "Estoque", id });
+  await excluir("estoque", id);
 }
 
 // ---------------------------------------------------------------------------

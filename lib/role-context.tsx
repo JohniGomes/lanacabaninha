@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Role } from "./types";
 import { clearRole, getRole, setRole as persistRole } from "./storage";
-import { login as loginNaPlanilha } from "./sheets-api";
+import { login as loginNoBanco } from "./api-client";
 
 interface RoleContextValue {
   role: Role | null;
@@ -24,7 +24,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   async function login(email: string, senha: string) {
-    const resposta = await loginNaPlanilha(email, senha);
+    const resposta = await loginNoBanco(email, senha);
     if (!resposta.ok || (resposta.role !== "admin" && resposta.role !== "colaborador")) {
       return false;
     }
