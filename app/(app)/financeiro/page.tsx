@@ -6,12 +6,16 @@ import { useRole } from "@/lib/role-context";
 import {
   addFornecedor,
   addLancamento,
+  deleteFornecedor,
+  deleteLancamento,
   getFornecedores,
   getLancamentos,
+  updateFornecedor,
+  updateLancamento,
 } from "@/lib/storage";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { StatCard } from "@/components/StatCard";
-import { IconTrendingDown, IconTrendingUp, IconWallet } from "@/components/Icons";
+import { IconPencil, IconTrash, IconTrendingDown, IconTrendingUp, IconWallet } from "@/components/Icons";
 import { Fornecedor, LancamentoFinanceiro, TipoLancamento } from "@/lib/types";
 
 const CATEGORIAS_SUGERIDAS = [
@@ -63,6 +67,17 @@ export default function FinanceiroPage() {
   const [pagamentoFornecedorId, setPagamentoFornecedorId] = useState<string | null>(null);
   const [pagamentoValor, setPagamentoValor] = useState("");
   const [pagamentoData, setPagamentoData] = useState(HOJE);
+
+  const [editandoLancamentoId, setEditandoLancamentoId] = useState<string | null>(null);
+  const [editTipo, setEditTipo] = useState<TipoLancamento>("receita");
+  const [editDescricao, setEditDescricao] = useState("");
+  const [editCategoria, setEditCategoria] = useState("");
+  const [editValor, setEditValor] = useState("");
+  const [editData, setEditData] = useState("");
+
+  const [editandoFornecedorId, setEditandoFornecedorId] = useState<string | null>(null);
+  const [editFornecedorNome, setEditFornecedorNome] = useState("");
+  const [editFornecedorCategoria, setEditFornecedorCategoria] = useState("");
 
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(false);
@@ -196,6 +211,88 @@ export default function FinanceiroPage() {
     }
   }
 
+  function iniciarEdicaoLancamento(l: LancamentoFinanceiro) {
+    setEditandoLancamentoId(l.id);
+    setEditTipo(l.tipo);
+    setEditDescricao(l.descricao);
+    setEditCategoria(l.categoria);
+    setEditValor(String(l.valor));
+    setEditData(l.data);
+  }
+
+  function cancelarEdicaoLancamento() {
+    setEditandoLancamentoId(null);
+  }
+
+  function podeSalvarEdicaoLancamento() {
+    return editDescricao.trim() && editCategoria.trim() && editData && Number(editValor) > 0;
+  }
+
+  async function salvarEdicaoLancamento() {
+    if (!editandoLancamentoId || !podeSalvarEdicaoLancamento()) return;
+    try {
+      await updateLancamento(editandoLancamentoId, {
+        tipo: editTipo,
+        descricao: editDescricao.trim(),
+        categoria: editCategoria.trim(),
+        valor: Number(editValor),
+        data: editData,
+      });
+      setLancamentos(await getLancamentos());
+      setEditandoLancamentoId(null);
+    } catch {
+      setErro(true);
+    }
+  }
+
+  async function excluirLancamento(id: string) {
+    if (!window.confirm("Excluir este lançamento?")) return;
+    try {
+      await deleteLancamento(id);
+      setLancamentos(await getLancamentos());
+    } catch {
+      setErro(true);
+    }
+  }
+
+  function iniciarEdicaoFornecedor(f: Fornecedor) {
+    setEditandoFornecedorId(f.id);
+    setEditFornecedorNome(f.nome);
+    setEditFornecedorCategoria(f.categoria);
+  }
+
+  function cancelarEdicaoFornecedor() {
+    setEditandoFornecedorId(null);
+  }
+
+  function podeSalvarEdicaoFornecedor() {
+    return editFornecedorNome.trim() && editFornecedorCategoria.trim();
+  }
+
+  async function salvarEdicaoFornecedor() {
+    if (!editandoFornecedorId || !podeSalvarEdicaoFornecedor()) return;
+    try {
+      await updateFornecedor(editandoFornecedorId, {
+        nome: editFornecedorNome.trim(),
+        categoria: editFornecedorCategoria.trim(),
+      });
+      setFornecedores(await getFornecedores());
+      setEditandoFornecedorId(null);
+    } catch {
+      setErro(true);
+    }
+  }
+
+  async function excluirFornecedor(id: string) {
+    if (!window.confirm("Excluir este fornecedor?")) return;
+    try {
+      await deleteFornecedor(id);
+      setFornecedores(await getFornecedores());
+    } catch {
+      setErro(true);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -295,22 +392,84 @@ export default function FinanceiroPage() {
                 return (
                   <div
                     key={l.id}
-                    className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3"
+                    className="relative rounded-xl border border-border bg-surface px-4 py-3"
                   >
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">{l.descricao}</p>
-                      <p className="text-xs text-muted">
-                        {l.categoria} · {formatDate(l.data)}
-                        {fornecedor && ` · ${fornecedor.nome}`}
-                      </p>
-                    </div>
-                    <span
-                      className={`shrink-0 text-sm font-semibold ${
-                        l.tipo === "receita" ? "text-mint-dark" : "text-pink-dark"
-                      }`}
-                    >
-                      {l.tipo === "receita" ? "+" : "-"} {formatCurrency(l.valor)}
-                    </span>
+                    {editandoLancamentoId === l.id ? (
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setEditTipo("receita")}
+                            className={`flex-1 rounded-xl px-3 py-2 text-sm font-semibold ${
+                              editTipo === "receita" ? "bg-mint/60 text-mint-dark" : "bg-zinc-100 text-muted"
+                            }`}
+                          >
+                            Receita
+                          </button>
+                          <button
+                            onClick={() => setEditTipo("despesa")}
+                            className={`flex-1 rounded-xl px-3 py-2 text-sm font-semibold ${
+                              editTipo === "despesa" ? "bg-pink/60 text-pink-dark" : "bg-zinc-100 text-muted"
+                            }`}
+                          >
+                            Despesa
+                          </button>
+                        </div>
+                        <LabeledInput label="Descrição" value={editDescricao} onChange={setEditDescricao} />
+                        <LabeledInput label="Categoria" value={editCategoria} onChange={setEditCategoria} />
+                        <div className="grid grid-cols-2 gap-3">
+                          <LabeledInput label="Valor (R$)" value={editValor} onChange={setEditValor} type="number" />
+                          <LabeledInput label="Data" value={editData} onChange={setEditData} type="date" />
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={cancelarEdicaoLancamento}
+                            className="flex-1 rounded-lg border border-border py-1.5 text-xs font-semibold text-foreground"
+                          >
+                            Cancelar
+                          </button>
+                          <button
+                            onClick={salvarEdicaoLancamento}
+                            disabled={!podeSalvarEdicaoLancamento()}
+                            className="flex-1 rounded-lg bg-pink-dark py-1.5 text-xs font-semibold text-white disabled:opacity-40"
+                          >
+                            Salvar
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="absolute right-3 top-3 flex items-center gap-1">
+                          <button
+                            onClick={() => iniciarEdicaoLancamento(l)}
+                            className="flex h-7 w-7 items-center justify-center rounded-lg text-muted"
+                            aria-label={`Editar ${l.descricao}`}
+                          >
+                            <IconPencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => excluirLancamento(l.id)}
+                            className="flex h-7 w-7 items-center justify-center rounded-lg text-muted"
+                            aria-label={`Excluir ${l.descricao}`}
+                          >
+                            <IconTrash className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <div className="min-w-0 pr-16">
+                          <p className="truncate text-sm font-medium">{l.descricao}</p>
+                          <p className="text-xs text-muted">
+                            {l.categoria} · {formatDate(l.data)}
+                            {fornecedor && ` · ${fornecedor.nome}`}
+                          </p>
+                        </div>
+                        <span
+                          className={`mt-1 block text-sm font-semibold ${
+                            l.tipo === "receita" ? "text-mint-dark" : "text-pink-dark"
+                          }`}
+                        >
+                          {l.tipo === "receita" ? "+" : "-"} {formatCurrency(l.valor)}
+                        </span>
+                      </>
+                    )}
                   </div>
                 );
               })}
@@ -369,48 +528,97 @@ export default function FinanceiroPage() {
                 .filter((l) => l.fornecedorId === f.id)
                 .reduce((acc, l) => acc + l.valor, 0);
               const pagamentoAberto = pagamentoFornecedorId === f.id;
+              const editandoEsteFornecedor = editandoFornecedorId === f.id;
               return (
-                <div key={f.id} className="rounded-2xl border border-border bg-surface p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold">{f.nome}</p>
-                      <p className="text-xs text-muted">{f.categoria}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold text-pink-dark">{formatCurrency(totalPago)}</p>
-                      <p className="text-xs text-muted">total pago</p>
-                    </div>
-                  </div>
-
-                  {!pagamentoAberto ? (
-                    <button
-                      onClick={() => setPagamentoFornecedorId(f.id)}
-                      className="mt-3 w-full rounded-lg border border-border py-2 text-xs font-semibold text-foreground"
-                    >
-                      + Registrar pagamento
-                    </button>
-                  ) : (
-                    <div className="mt-3 space-y-2 border-t border-border pt-3">
-                      <div className="grid grid-cols-2 gap-2">
-                        <LabeledInput label="Valor (R$)" value={pagamentoValor} onChange={setPagamentoValor} type="number" />
-                        <LabeledInput label="Data" value={pagamentoData} onChange={setPagamentoData} type="date" />
-                      </div>
+                <div key={f.id} className="relative rounded-2xl border border-border bg-surface p-4">
+                  {editandoEsteFornecedor ? (
+                    <div className="space-y-2">
+                      <LabeledInput label="Nome" value={editFornecedorNome} onChange={setEditFornecedorNome} />
+                      <label className="block text-sm">
+                        <span className="mb-1 block font-medium text-muted">Categoria</span>
+                        <input
+                          list="categorias-fornecedor"
+                          value={editFornecedorCategoria}
+                          onChange={(e) => setEditFornecedorCategoria(e.target.value)}
+                          className="w-full rounded-xl border border-border bg-cream px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
+                        />
+                      </label>
                       <div className="flex gap-2">
                         <button
-                          onClick={() => setPagamentoFornecedorId(null)}
-                          className="flex-1 rounded-lg border border-border py-2 text-xs font-semibold text-foreground"
+                          onClick={cancelarEdicaoFornecedor}
+                          className="flex-1 rounded-lg border border-border py-1.5 text-xs font-semibold text-foreground"
                         >
                           Cancelar
                         </button>
                         <button
-                          onClick={() => registrarPagamento(f)}
-                          disabled={!pagamentoValor || Number(pagamentoValor) <= 0}
-                          className="flex-1 rounded-lg bg-pink-dark py-2 text-xs font-semibold text-white disabled:opacity-40"
+                          onClick={salvarEdicaoFornecedor}
+                          disabled={!podeSalvarEdicaoFornecedor()}
+                          className="flex-1 rounded-lg bg-pink-dark py-1.5 text-xs font-semibold text-white disabled:opacity-40"
                         >
-                          Confirmar
+                          Salvar
                         </button>
                       </div>
                     </div>
+                  ) : (
+                    <>
+                      <div className="absolute right-3 top-3 flex items-center gap-1">
+                        <button
+                          onClick={() => iniciarEdicaoFornecedor(f)}
+                          className="flex h-7 w-7 items-center justify-center rounded-lg text-muted"
+                          aria-label={`Editar ${f.nome}`}
+                        >
+                          <IconPencil className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => excluirFornecedor(f.id)}
+                          className="flex h-7 w-7 items-center justify-center rounded-lg text-muted"
+                          aria-label={`Excluir ${f.nome}`}
+                        >
+                          <IconTrash className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <div className="flex items-center justify-between pr-16">
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold">{f.nome}</p>
+                          <p className="text-xs text-muted">{f.categoria}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-semibold text-pink-dark">{formatCurrency(totalPago)}</p>
+                          <p className="text-xs text-muted">total pago</p>
+                        </div>
+                      </div>
+
+                      {!pagamentoAberto ? (
+                        <button
+                          onClick={() => setPagamentoFornecedorId(f.id)}
+                          className="mt-3 w-full rounded-lg border border-border py-2 text-xs font-semibold text-foreground"
+                        >
+                          + Registrar pagamento
+                        </button>
+                      ) : (
+                        <div className="mt-3 space-y-2 border-t border-border pt-3">
+                          <div className="grid grid-cols-2 gap-2">
+                            <LabeledInput label="Valor (R$)" value={pagamentoValor} onChange={setPagamentoValor} type="number" />
+                            <LabeledInput label="Data" value={pagamentoData} onChange={setPagamentoData} type="date" />
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => setPagamentoFornecedorId(null)}
+                              className="flex-1 rounded-lg border border-border py-2 text-xs font-semibold text-foreground"
+                            >
+                              Cancelar
+                            </button>
+                            <button
+                              onClick={() => registrarPagamento(f)}
+                              disabled={!pagamentoValor || Number(pagamentoValor) <= 0}
+                              className="flex-1 rounded-lg bg-pink-dark py-2 text-xs font-semibold text-white disabled:opacity-40"
+                            >
+                              Confirmar
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               );

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { EventCard } from "@/components/EventCard";
 import { IconLink } from "@/components/Icons";
-import { addEvento, getEventos } from "@/lib/storage";
+import { addEvento, deleteEvento, getEventos } from "@/lib/storage";
 import { colecoes } from "@/lib/mock-data";
 import { checklistInicial } from "@/lib/checklist-template";
 import { CaminhoFesta, Evento } from "@/lib/types";
@@ -59,6 +59,15 @@ export default function CalendarioPage() {
       setCopiado(true);
       setTimeout(() => setCopiado(false), 2000);
     });
+  }
+
+  async function handleExcluirEvento(id: string) {
+    try {
+      await deleteEvento(id);
+      setEventos((prev) => prev.filter((e) => e.id !== id));
+    } catch {
+      setErro(true);
+    }
   }
 
   function podeSalvar() {
@@ -233,7 +242,7 @@ export default function CalendarioPage() {
       ) : (
         <div className="space-y-3">
           {ordenados.map((evento) => (
-            <EventCard key={evento.id} evento={evento} />
+            <EventCard key={evento.id} evento={evento} onExcluir={handleExcluirEvento} />
           ))}
         </div>
       )}

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { StatCard } from "@/components/StatCard";
 import { EventCard } from "@/components/EventCard";
-import { getEventos, getLancamentos } from "@/lib/storage";
+import { deleteEvento, getEventos, getLancamentos } from "@/lib/storage";
 import { Evento, LancamentoFinanceiro } from "@/lib/types";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { useRole } from "@/lib/role-context";
@@ -37,6 +37,15 @@ export default function DashboardPage() {
     .filter((e) => e.data >= HOJE)
     .sort((a, b) => a.data.localeCompare(b.data))
     .slice(0, 5);
+
+  async function handleExcluirEvento(id: string) {
+    try {
+      await deleteEvento(id);
+      setEventos((prev) => prev.filter((e) => e.id !== id));
+    } catch {
+      setErro(true);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -82,7 +91,7 @@ export default function DashboardPage() {
             ) : (
               <div className="space-y-3">
                 {proximosEventos.map((evento) => (
-                  <EventCard key={evento.id} evento={evento} />
+                  <EventCard key={evento.id} evento={evento} onExcluir={handleExcluirEvento} />
                 ))}
               </div>
             )}

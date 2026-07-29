@@ -183,6 +183,17 @@ export async function addLancamento(lancamento: LancamentoFinanceiro): Promise<v
   await inserir("financeiro", lancamento as unknown as Record<string, unknown>);
 }
 
+export async function updateLancamento(
+  id: string,
+  dados: Partial<Pick<LancamentoFinanceiro, "descricao" | "categoria" | "tipo" | "valor" | "data">>
+): Promise<void> {
+  await atualizar("financeiro", id, dados as unknown as Record<string, unknown>);
+}
+
+export async function deleteLancamento(id: string): Promise<void> {
+  await excluir("financeiro", id);
+}
+
 // ---------------------------------------------------------------------------
 // Fornecedores
 // ---------------------------------------------------------------------------
@@ -193,6 +204,17 @@ export async function getFornecedores(): Promise<Fornecedor[]> {
 
 export async function addFornecedor(fornecedor: Fornecedor): Promise<void> {
   await inserir("fornecedores", fornecedor as unknown as Record<string, unknown>);
+}
+
+export async function updateFornecedor(
+  id: string,
+  dados: Partial<Pick<Fornecedor, "nome" | "categoria" | "contato">>
+): Promise<void> {
+  await atualizar("fornecedores", id, dados as unknown as Record<string, unknown>);
+}
+
+export async function deleteFornecedor(id: string): Promise<void> {
+  await excluir("fornecedores", id);
 }
 
 // ---------------------------------------------------------------------------
@@ -209,6 +231,13 @@ export async function addEstoqueItem(item: EstoqueItem): Promise<void> {
 
 export async function updateEstoqueItem(id: string, quantidade: number): Promise<void> {
   await atualizar("estoque", id, { quantidade });
+}
+
+export async function atualizarItemEstoque(
+  id: string,
+  dados: Partial<Pick<EstoqueItem, "categoria" | "nome" | "nota">>
+): Promise<void> {
+  await atualizar("estoque", id, dados as unknown as Record<string, unknown>);
 }
 
 export async function deleteEstoqueItem(id: string): Promise<void> {

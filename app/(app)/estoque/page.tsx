@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   addEstoqueItem,
+  atualizarItemEstoque,
   deleteEstoqueItem,
   desmarcarDanificado,
   getEstoque,
@@ -10,7 +11,7 @@ import {
   updateEstoqueItem,
 } from "@/lib/storage";
 import { Evento, EstoqueItem } from "@/lib/types";
-import { IconAlertTriangle, IconTrash } from "@/components/Icons";
+import { IconAlertTriangle, IconPencil, IconTrash } from "@/components/Icons";
 import { formatDate } from "@/lib/format";
 
 export default function EstoquePage() {
@@ -23,6 +24,10 @@ export default function EstoquePage() {
   const [novaCategoria, setNovaCategoria] = useState("");
   const [novoNome, setNovoNome] = useState("");
   const [novaQuantidade, setNovaQuantidade] = useState("1");
+
+  const [editandoItemId, setEditandoItemId] = useState<string | null>(null);
+  const [editItemCategoria, setEditItemCategoria] = useState("");
+  const [editItemNome, setEditItemNome] = useState("");
 
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(false);
@@ -102,6 +107,30 @@ export default function EstoquePage() {
     try {
       await deleteEstoqueItem(id);
       setItens(await getEstoque());
+    } catch {
+      setErro(true);
+    }
+  }
+
+  function iniciarEdicaoItem(item: EstoqueItem) {
+    setEditandoItemId(item.id);
+    setEditItemCategoria(item.categoria);
+    setEditItemNome(item.nome);
+  }
+
+  function cancelarEdicaoItem() {
+    setEditandoItemId(null);
+  }
+
+  async function salvarEdicaoItem() {
+    if (!editandoItemId || !editItemCategoria.trim() || !editItemNome.trim()) return;
+    try {
+      await atualizarItemEstoque(editandoItemId, {
+        categoria: editItemCategoria.trim(),
+        nome: editItemNome.trim(),
+      });
+      setItens(await getEstoque());
+      setEditandoItemId(null);
     } catch {
       setErro(true);
     }
@@ -273,39 +302,79 @@ export default function EstoquePage() {
               </button>
               {aberta && (
                 <div className="space-y-1.5 border-t border-border p-3 pt-2">
-                  {itensDoGrupo.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center justify-between gap-2 rounded-xl bg-cream px-3 py-2"
-                    >
-                      <div className="min-w-0">
-                        <p className="truncate text-sm">{item.nome}</p>
-                        {item.nota && <p className="text-xs text-muted">{item.nota}</p>}
+                  {itensDoGrupo.map((item) =>
+                    editandoItemId === item.id ? (
+                      <div key={item.id} className="space-y-1.5 rounded-xl bg-cream px-3 py-2">
+                        <input
+                          list="categorias-estoque"
+                          value={editItemCategoria}
+                          onChange={(e) => setEditItemCategoria(e.target.value)}
+                          placeholder="Categoria"
+                          className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-pink-dark"
+                        />
+                        <input
+                          value={editItemNome}
+                          onChange={(e) => setEditItemNome(e.target.value)}
+                          placeholder="Nome do item"
+                          className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-pink-dark"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={cancelarEdicaoItem}
+                            className="flex-1 rounded-lg border border-border py-1.5 text-xs font-semibold text-foreground"
+                          >
+                            Cancelar
+                          </button>
+                          <button
+                            onClick={salvarEdicaoItem}
+                            disabled={!editItemCategoria.trim() || !editItemNome.trim()}
+                            className="flex-1 rounded-lg bg-pink-dark py-1.5 text-xs font-semibold text-white disabled:opacity-40"
+                          >
+                            Salvar
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex shrink-0 items-center gap-1.5">
-                        <button
-                          onClick={() => alterarQuantidade(item.id, -1)}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg bg-surface text-sm font-semibold text-pink-dark"
-                        >
-                          −
-                        </button>
-                        <span className="w-6 text-center text-sm font-semibold">{item.quantidade}</span>
-                        <button
-                          onClick={() => alterarQuantidade(item.id, 1)}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg bg-surface text-sm font-semibold text-mint-dark"
-                        >
-                          +
-                        </button>
-                        <button
-                          onClick={() => excluirItem(item.id, item.nome)}
-                          className="ml-1 flex h-7 w-7 items-center justify-center rounded-lg text-muted"
-                          aria-label={`Excluir ${item.nome}`}
-                        >
-                          <IconTrash className="h-4 w-4" />
-                        </button>
+                    ) : (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between gap-2 rounded-xl bg-cream px-3 py-2"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate text-sm">{item.nome}</p>
+                          {item.nota && <p className="text-xs text-muted">{item.nota}</p>}
+                        </div>
+                        <div className="flex shrink-0 items-center gap-1.5">
+                          <button
+                            onClick={() => alterarQuantidade(item.id, -1)}
+                            className="flex h-7 w-7 items-center justify-center rounded-lg bg-surface text-sm font-semibold text-pink-dark"
+                          >
+                            −
+                          </button>
+                          <span className="w-6 text-center text-sm font-semibold">{item.quantidade}</span>
+                          <button
+                            onClick={() => alterarQuantidade(item.id, 1)}
+                            className="flex h-7 w-7 items-center justify-center rounded-lg bg-surface text-sm font-semibold text-mint-dark"
+                          >
+                            +
+                          </button>
+                          <button
+                            onClick={() => iniciarEdicaoItem(item)}
+                            className="ml-1 flex h-7 w-7 items-center justify-center rounded-lg text-muted"
+                            aria-label={`Editar ${item.nome}`}
+                          >
+                            <IconPencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => excluirItem(item.id, item.nome)}
+                            className="flex h-7 w-7 items-center justify-center rounded-lg text-muted"
+                            aria-label={`Excluir ${item.nome}`}
+                          >
+                            <IconTrash className="h-4 w-4" />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  )}
                 </div>
               )}
             </div>
