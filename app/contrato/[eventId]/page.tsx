@@ -91,8 +91,8 @@ export default function ContratoPage() {
           <p className="mt-1 text-sm text-muted">Contrato de prestação de serviços — festa da(o) {evento.aniversariante}</p>
         </div>
 
-        {evento.contratoAceito ? (
-          <div className="rounded-2xl border border-mint-dark/40 bg-mint/20 p-4 text-center">
+        {evento.contratoAceito && (
+          <div className="mb-4 rounded-2xl border border-mint-dark/40 bg-mint/20 p-4 text-center">
             <IconCheckCircle className="mx-auto h-8 w-8 text-mint-dark" />
             <p className="mt-2 text-sm font-semibold text-foreground">Contrato já aceito</p>
             <p className="mt-1 text-xs text-muted">
@@ -101,11 +101,10 @@ export default function ContratoPage() {
                 ? new Date(evento.contratoAceitoEm).toLocaleString("pt-BR")
                 : "—"}
             </p>
-            <p className="mt-3 text-xs text-muted">
-              Nossa equipe já foi avisada e entra em contato pelo WhatsApp em breve.
-            </p>
           </div>
-        ) : !termosCompletos ? (
+        )}
+
+        {!termosCompletos ? (
           <div className="rounded-2xl border border-border bg-surface p-4 text-center">
             <IconClock className="mx-auto h-8 w-8 text-muted" />
             <p className="mt-2 text-sm font-semibold text-foreground">
@@ -203,61 +202,82 @@ export default function ContratoPage() {
               </div>
             </div>
 
-            <div className="mt-4 space-y-3 rounded-2xl border border-border bg-surface p-4">
-              <p className="text-center text-xs font-semibold uppercase tracking-wide text-muted">
-                Assinatura da contratante
-              </p>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-muted">Nome completo</span>
-                <input
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-cream px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
-                />
-              </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-muted">RG</span>
-                <input
-                  value={rg}
-                  onChange={(e) => setRg(e.target.value)}
-                  placeholder="00.000.000-0"
-                  className="w-full rounded-xl border border-border bg-cream px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
-                />
-              </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-muted">CPF</span>
-                <input
-                  value={cpf}
-                  onChange={(e) => setCpf(e.target.value)}
-                  placeholder="000.000.000-00"
-                  className="w-full rounded-xl border border-border bg-cream px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
-                />
-              </label>
-            </div>
+            {evento.contratoAceito ? (
+              <div className="mt-4 space-y-1 rounded-2xl border border-border bg-surface p-4 text-sm">
+                <p className="text-center text-xs font-semibold uppercase tracking-wide text-muted">
+                  Assinatura da contratante
+                </p>
+                <p className="mt-2 text-xs text-muted">
+                  <span className="font-medium text-foreground">Nome:</span> {evento.contatoNome}
+                </p>
+                <p className="text-xs text-muted">
+                  <span className="font-medium text-foreground">RG:</span>{" "}
+                  {evento.rgContratante || "—"}
+                </p>
+                <p className="text-xs text-muted">
+                  <span className="font-medium text-foreground">CPF:</span>{" "}
+                  {evento.cpfContratante || "—"}
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="mt-4 space-y-3 rounded-2xl border border-border bg-surface p-4">
+                  <p className="text-center text-xs font-semibold uppercase tracking-wide text-muted">
+                    Assinatura da contratante
+                  </p>
+                  <label className="block text-sm">
+                    <span className="mb-1 block font-medium text-muted">Nome completo</span>
+                    <input
+                      value={nome}
+                      onChange={(e) => setNome(e.target.value)}
+                      className="w-full rounded-xl border border-border bg-cream px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
+                    />
+                  </label>
+                  <label className="block text-sm">
+                    <span className="mb-1 block font-medium text-muted">RG</span>
+                    <input
+                      value={rg}
+                      onChange={(e) => setRg(e.target.value)}
+                      placeholder="00.000.000-0"
+                      className="w-full rounded-xl border border-border bg-cream px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
+                    />
+                  </label>
+                  <label className="block text-sm">
+                    <span className="mb-1 block font-medium text-muted">CPF</span>
+                    <input
+                      value={cpf}
+                      onChange={(e) => setCpf(e.target.value)}
+                      placeholder="000.000.000-00"
+                      className="w-full rounded-xl border border-border bg-cream px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
+                    />
+                  </label>
+                </div>
 
-            <label className="mt-4 flex items-start gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={aceite}
-                onChange={(e) => setAceite(e.target.checked)}
-                className="mt-0.5 h-4 w-4 accent-pink-dark"
-              />
-              <span className="text-muted">Li e aceito o contrato acima.</span>
-            </label>
+                <label className="mt-4 flex items-start gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={aceite}
+                    onChange={(e) => setAceite(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 accent-pink-dark"
+                  />
+                  <span className="text-muted">Li e aceito o contrato acima.</span>
+                </label>
 
-            {erro && (
-              <p className="mt-3 text-xs font-medium text-pink-dark">
-                Não consegui confirmar agora. Confira sua internet e tente de novo.
-              </p>
+                {erro && (
+                  <p className="mt-3 text-xs font-medium text-pink-dark">
+                    Não consegui confirmar agora. Confira sua internet e tente de novo.
+                  </p>
+                )}
+
+                <button
+                  onClick={handleConfirmar}
+                  disabled={!aceite || !nome.trim() || !cpf.trim() || !rg.trim() || enviando}
+                  className="mt-4 w-full rounded-2xl bg-pink-dark px-5 py-3 text-sm font-semibold text-white disabled:opacity-40"
+                >
+                  {enviando ? "Enviando..." : "Confirmar aceite"}
+                </button>
+              </>
             )}
-
-            <button
-              onClick={handleConfirmar}
-              disabled={!aceite || !nome.trim() || !cpf.trim() || !rg.trim() || enviando}
-              className="mt-4 w-full rounded-2xl bg-pink-dark px-5 py-3 text-sm font-semibold text-white disabled:opacity-40"
-            >
-              {enviando ? "Enviando..." : "Confirmar aceite"}
-            </button>
           </>
         )}
       </div>
