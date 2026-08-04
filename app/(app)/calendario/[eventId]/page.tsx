@@ -598,12 +598,19 @@ export default function EventoDetalhePage() {
         {evento.contratoAceito ? (
           <div className="flex items-center gap-2 rounded-xl border border-mint-dark/40 bg-mint/20 px-4 py-3 text-sm">
             <IconCheckCircle className="h-5 w-5 shrink-0 text-mint-dark" />
-            <div>
+            <div className="min-w-0 flex-1">
               <span className="font-semibold text-foreground">Aceito</span>
               <span className="block text-xs text-muted">
                 {evento.contratoAceitoEm ? new Date(evento.contratoAceitoEm).toLocaleString("pt-BR") : ""}
               </span>
             </div>
+            <Link
+              href={`/contrato/${evento.id}`}
+              target="_blank"
+              className="shrink-0 rounded-lg border border-mint-dark/40 bg-surface px-3 py-1.5 text-xs font-semibold text-foreground"
+            >
+              Ver contrato
+            </Link>
           </div>
         ) : (
           <div className="space-y-2">
