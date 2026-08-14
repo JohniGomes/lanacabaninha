@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { colecoes } from "@/lib/mock-data";
 import { addEvento } from "@/lib/storage";
 import { checklistInicial } from "@/lib/checklist-template";
+import { arredondarHorario } from "@/lib/format";
 import { Evento } from "@/lib/types";
 import logo from "@/public/logo.png";
 
@@ -130,7 +131,7 @@ export default function FormularioPublicoPage() {
               <Field label="Endereço da festa" value={form.endereco} onChange={(v) => update("endereco", v)} />
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Data" value={form.data} onChange={(v) => update("data", v)} type="date" />
-                <Field label="Horário" value={form.horario} onChange={(v) => update("horario", v)} type="time" />
+                <Field label="Horário" value={form.horario} onChange={(v) => update("horario", arredondarHorario(v))} type="time" />
               </div>
             </div>
           )}

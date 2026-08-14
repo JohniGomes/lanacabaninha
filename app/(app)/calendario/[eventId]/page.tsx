@@ -20,7 +20,7 @@ import {
 } from "@/lib/storage";
 import { colecoes } from "@/lib/mock-data";
 import { ChecklistItem, EstoqueItem, Evento } from "@/lib/types";
-import { formatCurrency, formatDateLong } from "@/lib/format";
+import { arredondarHorario, formatCurrency, formatDateLong } from "@/lib/format";
 import { useRole } from "@/lib/role-context";
 
 export default function EventoDetalhePage() {
@@ -374,7 +374,7 @@ export default function EventoDetalhePage() {
                 type="time"
                 step={1800}
                 value={editHorario}
-                onChange={(e) => setEditHorario(e.target.value)}
+                onChange={(e) => setEditHorario(arredondarHorario(e.target.value))}
                 className="rounded-lg border border-border bg-cream px-3 py-2 text-xs outline-none focus:border-pink-dark"
               />
             </div>

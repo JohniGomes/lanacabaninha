@@ -6,6 +6,7 @@ import { IconLink } from "@/components/Icons";
 import { addEvento, deleteEvento, getEventos } from "@/lib/storage";
 import { colecoes } from "@/lib/mock-data";
 import { checklistInicial } from "@/lib/checklist-template";
+import { arredondarHorario } from "@/lib/format";
 import { CaminhoFesta, Evento } from "@/lib/types";
 
 const INITIAL_FORM = {
@@ -153,7 +154,7 @@ export default function CalendarioPage() {
           <Field label="Endereço da festa" value={form.endereco} onChange={(v) => update("endereco", v)} />
           <div className="grid grid-cols-2 gap-3">
             <Field label="Data" value={form.data} onChange={(v) => update("data", v)} type="date" />
-            <Field label="Horário" value={form.horario} onChange={(v) => update("horario", v)} type="time" />
+            <Field label="Horário" value={form.horario} onChange={(v) => update("horario", arredondarHorario(v))} type="time" />
           </div>
 
           <div className="flex gap-2">
