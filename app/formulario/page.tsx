@@ -17,10 +17,6 @@ interface FormState {
   endereco: string;
   data: string;
   horario: string;
-  corFavorita: string;
-  corNaoGosta: string;
-  naoPodeFaltar: string;
-  aceitaPrivacidade: boolean;
 }
 
 const INITIAL_STATE: FormState = {
@@ -31,33 +27,29 @@ const INITIAL_STATE: FormState = {
   endereco: "",
   data: "",
   horario: "",
-  corFavorita: "",
-  corNaoGosta: "",
-  naoPodeFaltar: "",
-  aceitaPrivacidade: false,
 };
-
-const TOTAL_STEPS = 2;
 
 export default function FormularioPublicoPage() {
   const router = useRouter();
-  const [step, setStep] = useState(0);
   const [form, setForm] = useState<FormState>(INITIAL_STATE);
   const [enviando, setEnviando] = useState(false);
+  const [salvandoRascunho, setSalvandoRascunho] = useState(false);
   const [erro, setErro] = useState(false);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function podeAvancar() {
-    if (step === 0) return form.aniversariante.trim() && form.endereco.trim() && form.data && form.horario;
-    if (step === 1) return form.aceitaPrivacidade;
-    return true;
+  function podeSalvarRascunho() {
+    return !!form.aniversariante.trim();
   }
 
-  async function handleSubmit() {
-    const evento: Evento = {
+  function podeEnviar() {
+    return form.aniversariante.trim() && form.endereco.trim() && form.data && form.horario;
+  }
+
+  function montarEvento(): Evento {
+    return {
       id: `evt-${Date.now()}`,
       aniversariante: form.aniversariante.trim(),
       idade: form.idade ? Number(form.idade) : undefined,
@@ -68,19 +60,33 @@ export default function FormularioPublicoPage() {
       horario: form.horario,
       tema: "",
       caminho: "personalizada",
-      corFavorita: form.corFavorita.trim() || undefined,
-      corNaoGosta: form.corNaoGosta.trim() || undefined,
-      naoPodeFaltar: form.naoPodeFaltar.trim() || undefined,
       checklist: checklistInicial(),
     };
+  }
+
+  async function handleSubmit() {
     setEnviando(true);
     setErro(false);
     try {
+      const evento = montarEvento();
       await addEvento(evento);
       router.push(`/contrato/${evento.id}`);
     } catch {
       setErro(true);
       setEnviando(false);
+    }
+  }
+
+  async function handleSalvarRascunho() {
+    setSalvandoRascunho(true);
+    setErro(false);
+    try {
+      const evento = montarEvento();
+      await addEvento(evento);
+      router.push(`/contrato/${evento.id}`);
+    } catch {
+      setErro(true);
+      setSalvandoRascunho(false);
     }
   }
 
@@ -92,58 +98,17 @@ export default function FormularioPublicoPage() {
           <p className="mt-1 text-sm text-muted">Formulário de atendimento — conta pra gente sobre a festa!</p>
         </div>
 
-        <StepDots step={step} total={TOTAL_STEPS} />
-
-        <div className="mt-6 space-y-5">
-          {step === 0 && (
-            <div className="space-y-3">
-              <p className="text-sm font-semibold">1. Dados da festa</p>
-              <Field label="Nome da aniversariante" value={form.aniversariante} onChange={(v) => update("aniversariante", v)} />
-              <Field label="Idade" value={form.idade} onChange={(v) => update("idade", v)} type="number" />
-              <Field label="Nome do pai/mãe/responsável" value={form.contatoNome} onChange={(v) => update("contatoNome", v)} />
-              <Field label="WhatsApp" value={form.contatoTelefone} onChange={(v) => update("contatoTelefone", v)} placeholder="(11) 90000-0000" />
-              <Field label="Endereço da festa" value={form.endereco} onChange={(v) => update("endereco", v)} />
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Data" value={form.data} onChange={(v) => update("data", v)} type="date" />
-                <Field label="Horário" value={form.horario} onChange={(v) => update("horario", arredondarHorario(v))} type="time" />
-              </div>
-            </div>
-          )}
-
-          {step === 1 && (
-            <div className="space-y-3">
-              <p className="text-sm font-semibold">2. Últimos detalhes</p>
-              <Field label="Cores favoritas da aniversariante" value={form.corFavorita} onChange={(v) => update("corFavorita", v)} />
-              <Field label="Alguma cor que ela não gosta?" value={form.corNaoGosta} onChange={(v) => update("corNaoGosta", v)} />
-              <TextArea
-                label="O que não pode faltar nessa festa?"
-                value={form.naoPodeFaltar}
-                onChange={(v) => update("naoPodeFaltar", v)}
-              />
-
-              <div className="rounded-xl border border-border bg-cream p-3 text-xs text-muted">
-                <p className="font-semibold text-foreground">Aviso de privacidade</p>
-                <p className="mt-1">
-                  Usamos os dados desse formulário (nome e idade da aniversariante, endereço,
-                  contato e preferências da festa) só para organizar e realizar o seu evento na
-                  Lá Na Cabaninha. Não vendemos nem compartilhamos essas informações com
-                  terceiros. Dúvidas sobre seus dados? Fale com a gente pelo WhatsApp.
-                </p>
-              </div>
-
-              <label className="flex items-start gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={form.aceitaPrivacidade}
-                  onChange={(e) => update("aceitaPrivacidade", e.target.checked)}
-                  className="mt-0.5 h-4 w-4 accent-pink-dark"
-                />
-                <span className="text-muted">
-                  Li e concordo com o uso dos meus dados conforme o aviso de privacidade acima.
-                </span>
-              </label>
-            </div>
-          )}
+        <div className="mt-6 space-y-3">
+          <p className="text-sm font-semibold">Dados da festa</p>
+          <Field label="Nome da aniversariante" value={form.aniversariante} onChange={(v) => update("aniversariante", v)} />
+          <Field label="Idade" value={form.idade} onChange={(v) => update("idade", v)} type="number" />
+          <Field label="Nome do pai/mãe/responsável" value={form.contatoNome} onChange={(v) => update("contatoNome", v)} />
+          <Field label="WhatsApp" value={form.contatoTelefone} onChange={(v) => update("contatoTelefone", v)} placeholder="(11) 90000-0000" />
+          <Field label="Endereço da festa" value={form.endereco} onChange={(v) => update("endereco", v)} />
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Data" value={form.data} onChange={(v) => update("data", v)} type="date" />
+            <Field label="Horário" value={form.horario} onChange={(v) => update("horario", arredondarHorario(v))} type="time" />
+          </div>
         </div>
       </div>
 
@@ -154,37 +119,21 @@ export default function FormularioPublicoPage() {
       )}
 
       <div className="mx-auto mt-4 flex w-full max-w-sm gap-3">
-        {step > 0 && (
-          <button
-            onClick={() => setStep((s) => s - 1)}
-            className="flex-1 rounded-2xl border border-border bg-surface px-5 py-3 text-sm font-semibold text-foreground"
-          >
-            Voltar
-          </button>
-        )}
         <button
-          disabled={!podeAvancar() || enviando}
-          onClick={() => (step === TOTAL_STEPS - 1 ? handleSubmit() : setStep((s) => s + 1))}
+          onClick={handleSalvarRascunho}
+          disabled={!podeSalvarRascunho() || enviando || salvandoRascunho}
+          className="flex-1 rounded-2xl border border-border bg-surface px-5 py-3 text-sm font-semibold text-foreground disabled:opacity-40"
+        >
+          {salvandoRascunho ? "Salvando..." : "Salvar rascunho"}
+        </button>
+        <button
+          onClick={handleSubmit}
+          disabled={!podeEnviar() || enviando || salvandoRascunho}
           className="flex-1 rounded-2xl bg-pink-dark px-5 py-3 text-sm font-semibold text-white disabled:opacity-40"
         >
-          {step === TOTAL_STEPS - 1 ? (enviando ? "Enviando..." : "Enviar") : "Continuar"}
+          {enviando ? "Enviando..." : "Enviar"}
         </button>
       </div>
-    </div>
-  );
-}
-
-function StepDots({ step, total }: { step: number; total: number }) {
-  return (
-    <div className="flex items-center justify-center gap-1.5">
-      {Array.from({ length: total }).map((_, i) => (
-        <span
-          key={i}
-          className={`h-1.5 rounded-full transition-all ${
-            i === step ? "w-6 bg-pink-dark" : "w-1.5 bg-border"
-          }`}
-        />
-      ))}
     </div>
   );
 }
@@ -211,28 +160,6 @@ function Field({
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
         step={type === "time" ? 1800 : undefined}
-        className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
-      />
-    </label>
-  );
-}
-
-function TextArea({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <label className="block text-sm">
-      <span className="mb-1 block font-medium text-muted">{label}</span>
-      <textarea
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        rows={3}
         className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm outline-none focus:border-pink-dark"
       />
     </label>

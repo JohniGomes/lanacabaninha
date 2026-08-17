@@ -622,14 +622,23 @@ export default function EventoDetalhePage() {
               <IconClock className="h-5 w-5 shrink-0 text-muted" />
               <span className="font-semibold text-foreground">Aguardando aceite</span>
             </div>
-            <button
-              onClick={copiarLinkContrato}
-              className="w-full rounded-xl border border-dashed border-pink-dark/50 bg-pink/20 px-4 py-2.5 text-left text-xs text-pink-dark"
-            >
-              <span className="flex items-center gap-1.5 font-semibold">
-                <IconLink className="h-4 w-4" /> {copiado ? "Link copiado!" : "Copiar link do contrato"}
-              </span>
-            </button>
+            <div className="flex gap-2">
+              <Link
+                href={`/contrato/${evento.id}`}
+                target="_blank"
+                className="flex-1 rounded-xl border border-border bg-surface px-4 py-2.5 text-center text-xs font-semibold text-foreground"
+              >
+                Visualizar contrato
+              </Link>
+              <button
+                onClick={copiarLinkContrato}
+                className="flex-1 rounded-xl border border-dashed border-pink-dark/50 bg-pink/20 px-4 py-2.5 text-center text-xs font-semibold text-pink-dark"
+              >
+                <span className="flex items-center justify-center gap-1.5">
+                  <IconLink className="h-4 w-4" /> {copiado ? "Link copiado!" : "Copiar link"}
+                </span>
+              </button>
+            </div>
           </div>
         )}
 
@@ -661,7 +670,7 @@ export default function EventoDetalhePage() {
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <LabeledInput
-                  label="Qtd. cabanas"
+                  label="Qtd. Cabanas/Tendas"
                   value={quantidadeCabanas}
                   onChange={setQuantidadeCabanas}
                   type="number"

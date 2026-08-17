@@ -1,4 +1,5 @@
 export function formatDate(iso: string): string {
+  if (!iso) return "Data não definida";
   const date = new Date(`${iso}T00:00:00`);
   return date.toLocaleDateString("pt-BR", {
     weekday: "short",
@@ -8,6 +9,7 @@ export function formatDate(iso: string): string {
 }
 
 export function formatDateLong(iso: string): string {
+  if (!iso) return "Data não definida";
   const date = new Date(`${iso}T00:00:00`);
   return date.toLocaleDateString("pt-BR", {
     weekday: "long",
