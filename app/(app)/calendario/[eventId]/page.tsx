@@ -455,7 +455,11 @@ export default function EventoDetalhePage() {
         )}
 
         <p className="text-sm text-muted">
-          {colecao ? `Experiência Assinada — ${colecao.nome}` : `${evento.tema} (Personalizada)`}
+          {colecao
+            ? `Experiência Assinada — ${colecao.nome}`
+            : evento.tema
+              ? `${evento.tema} (Personalizada)`
+              : "Personalizada"}
         </p>
 
         <dl className="mt-4 space-y-1.5 text-sm">

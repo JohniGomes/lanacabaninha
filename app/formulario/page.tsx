@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { colecoes } from "@/lib/mock-data";
 import { addEvento } from "@/lib/storage";
 import { checklistInicial } from "@/lib/checklist-template";
 import { arredondarHorario } from "@/lib/format";
@@ -11,12 +10,9 @@ import { Evento } from "@/lib/types";
 import logo from "@/public/logo.png";
 
 interface FormState {
-  colecaoId?: string;
   aniversariante: string;
   idade: string;
-  contatoNome: string;
   contatoTelefone: string;
-  contatoEmail: string;
   endereco: string;
   data: string;
   horario: string;
@@ -27,12 +23,9 @@ interface FormState {
 }
 
 const INITIAL_STATE: FormState = {
-  colecaoId: undefined,
   aniversariante: "",
   idade: "",
-  contatoNome: "",
   contatoTelefone: "",
-  contatoEmail: "",
   endereco: "",
   data: "",
   horario: "",
@@ -42,7 +35,7 @@ const INITIAL_STATE: FormState = {
   aceitaPrivacidade: false,
 };
 
-const TOTAL_STEPS = 3;
+const TOTAL_STEPS = 2;
 
 export default function FormularioPublicoPage() {
   const router = useRouter();
@@ -56,9 +49,8 @@ export default function FormularioPublicoPage() {
   }
 
   function podeAvancar() {
-    if (step === 0) return !!form.colecaoId;
-    if (step === 1) return form.aniversariante.trim() && form.endereco.trim() && form.data && form.horario;
-    if (step === 2) return form.aceitaPrivacidade;
+    if (step === 0) return form.aniversariante.trim() && form.endereco.trim() && form.data && form.horario;
+    if (step === 1) return form.aceitaPrivacidade;
     return true;
   }
 
@@ -67,15 +59,13 @@ export default function FormularioPublicoPage() {
       id: `evt-${Date.now()}`,
       aniversariante: form.aniversariante.trim(),
       idade: form.idade ? Number(form.idade) : undefined,
-      contatoNome: form.contatoNome.trim() || form.aniversariante.trim(),
+      contatoNome: form.aniversariante.trim(),
       contatoTelefone: form.contatoTelefone.trim() || undefined,
-      contatoEmail: form.contatoEmail.trim() || undefined,
       endereco: form.endereco.trim(),
       data: form.data,
       horario: form.horario,
-      tema: colecoes.find((c) => c.id === form.colecaoId)?.nome ?? "",
-      caminho: "assinada",
-      colecaoId: form.colecaoId,
+      tema: "",
+      caminho: "personalizada",
       corFavorita: form.corFavorita.trim() || undefined,
       corNaoGosta: form.corNaoGosta.trim() || undefined,
       naoPodeFaltar: form.naoPodeFaltar.trim() || undefined,
@@ -105,29 +95,10 @@ export default function FormularioPublicoPage() {
         <div className="mt-6 space-y-5">
           {step === 0 && (
             <div className="space-y-3">
-              <p className="text-sm font-semibold">1. Qual coleção combina mais?</p>
-              <div className="grid grid-cols-1 gap-2.5">
-                {colecoes.map((c) => (
-                  <OptionCard
-                    key={c.id}
-                    selected={form.colecaoId === c.id}
-                    onClick={() => update("colecaoId", c.id)}
-                    title={c.nome}
-                    subtitle={c.descricao}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {step === 1 && (
-            <div className="space-y-3">
-              <p className="text-sm font-semibold">2. Dados da festa</p>
+              <p className="text-sm font-semibold">1. Dados da festa</p>
               <Field label="Nome da aniversariante" value={form.aniversariante} onChange={(v) => update("aniversariante", v)} />
               <Field label="Idade" value={form.idade} onChange={(v) => update("idade", v)} type="number" />
-              <Field label="Nome de quem está organizando" value={form.contatoNome} onChange={(v) => update("contatoNome", v)} />
               <Field label="WhatsApp" value={form.contatoTelefone} onChange={(v) => update("contatoTelefone", v)} placeholder="(11) 90000-0000" />
-              <Field label="E-mail" value={form.contatoEmail} onChange={(v) => update("contatoEmail", v)} type="email" placeholder="voce@email.com" />
               <Field label="Endereço da festa" value={form.endereco} onChange={(v) => update("endereco", v)} />
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Data" value={form.data} onChange={(v) => update("data", v)} type="date" />
@@ -136,9 +107,9 @@ export default function FormularioPublicoPage() {
             </div>
           )}
 
-          {step === 2 && (
+          {step === 1 && (
             <div className="space-y-3">
-              <p className="text-sm font-semibold">3. Últimos detalhes</p>
+              <p className="text-sm font-semibold">2. Últimos detalhes</p>
               <Field label="Cores favoritas da aniversariante" value={form.corFavorita} onChange={(v) => update("corFavorita", v)} />
               <Field label="Alguma cor que ela não gosta?" value={form.corNaoGosta} onChange={(v) => update("corNaoGosta", v)} />
               <TextArea
@@ -212,30 +183,6 @@ function StepDots({ step, total }: { step: number; total: number }) {
         />
       ))}
     </div>
-  );
-}
-
-function OptionCard({
-  selected,
-  onClick,
-  title,
-  subtitle,
-}: {
-  selected: boolean;
-  onClick: () => void;
-  title: string;
-  subtitle: string;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`w-full rounded-2xl border px-4 py-3 text-left transition-colors ${
-        selected ? "border-pink-dark bg-pink/30" : "border-border bg-surface"
-      }`}
-    >
-      <span className="block text-sm font-semibold">{title}</span>
-      <span className="block text-xs text-muted">{subtitle}</span>
-    </button>
   );
 }
 
