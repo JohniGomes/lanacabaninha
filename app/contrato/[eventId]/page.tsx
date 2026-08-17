@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { aceitarContrato, getEvento } from "@/lib/storage";
+import { aceitarContrato, getEvento, getRole } from "@/lib/storage";
 import { Evento } from "@/lib/types";
 import { formatCurrency, formatDateLong } from "@/lib/format";
 import { IconArrowLeft, IconCheckCircle, IconClock } from "@/components/Icons";
@@ -80,7 +80,7 @@ export default function ContratoPage() {
     <div className="flex flex-1 flex-col px-6 py-8">
       <div className="mx-auto w-full max-w-sm">
         <button
-          onClick={() => router.push("/")}
+          onClick={() => router.push(getRole() ? "/dashboard" : "/")}
           className="flex items-center gap-1 text-sm font-medium text-muted"
         >
           <IconArrowLeft className="h-4 w-4" /> Voltar

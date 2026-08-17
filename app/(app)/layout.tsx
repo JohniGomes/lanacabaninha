@@ -2,14 +2,18 @@
 
 import { useEffect } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useRole } from "@/lib/role-context";
 import { BottomNav } from "@/components/BottomNav";
+import { IconArrowLeft } from "@/components/Icons";
 import logo from "@/public/logo.png";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { role, ready } = useRole();
   const router = useRouter();
+  const pathname = usePathname();
+  const naInicio = pathname === "/dashboard";
 
   useEffect(() => {
     if (ready && !role) {
@@ -28,7 +32,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-1 flex-col">
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-surface/95 px-4 py-2 backdrop-blur">
-        <Image src={logo} alt="Lá Na Cabaninha" height={44} width={49} className="h-11 w-auto" priority />
+        <div className="flex items-center gap-2">
+          {!naInicio && (
+            <Link
+              href="/dashboard"
+              aria-label="Voltar para o início"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-muted"
+            >
+              <IconArrowLeft className="h-5 w-5" />
+            </Link>
+          )}
+          <Image src={logo} alt="Lá Na Cabaninha" height={44} width={49} className="h-11 w-auto" priority />
+        </div>
         <span className="rounded-full bg-lilac/40 px-3 py-1 text-xs font-semibold text-lilac-dark">
           {role === "admin" ? "Admin" : "Colaborador"}
         </span>

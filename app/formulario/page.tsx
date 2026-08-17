@@ -12,6 +12,7 @@ import logo from "@/public/logo.png";
 interface FormState {
   aniversariante: string;
   idade: string;
+  contatoNome: string;
   contatoTelefone: string;
   endereco: string;
   data: string;
@@ -25,6 +26,7 @@ interface FormState {
 const INITIAL_STATE: FormState = {
   aniversariante: "",
   idade: "",
+  contatoNome: "",
   contatoTelefone: "",
   endereco: "",
   data: "",
@@ -59,7 +61,7 @@ export default function FormularioPublicoPage() {
       id: `evt-${Date.now()}`,
       aniversariante: form.aniversariante.trim(),
       idade: form.idade ? Number(form.idade) : undefined,
-      contatoNome: form.aniversariante.trim(),
+      contatoNome: form.contatoNome.trim() || form.aniversariante.trim(),
       contatoTelefone: form.contatoTelefone.trim() || undefined,
       endereco: form.endereco.trim(),
       data: form.data,
@@ -98,6 +100,7 @@ export default function FormularioPublicoPage() {
               <p className="text-sm font-semibold">1. Dados da festa</p>
               <Field label="Nome da aniversariante" value={form.aniversariante} onChange={(v) => update("aniversariante", v)} />
               <Field label="Idade" value={form.idade} onChange={(v) => update("idade", v)} type="number" />
+              <Field label="Nome do pai/mãe/responsável" value={form.contatoNome} onChange={(v) => update("contatoNome", v)} />
               <Field label="WhatsApp" value={form.contatoTelefone} onChange={(v) => update("contatoTelefone", v)} placeholder="(11) 90000-0000" />
               <Field label="Endereço da festa" value={form.endereco} onChange={(v) => update("endereco", v)} />
               <div className="grid grid-cols-2 gap-3">
